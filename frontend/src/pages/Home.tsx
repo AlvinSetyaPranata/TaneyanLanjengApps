@@ -1,12 +1,30 @@
 import { Icon } from "@iconify/react";
 import DashboardCard from "../components/atoms/DashboardCard";
+import Headline from "../components/atoms/Headline";
 
 
 
 export default function Home() {
+
+  const data = [
+    {
+      title: "This is just a news",
+      url: "/"
+    },
+    {
+      title: "This is just a news",
+      url: "/home"
+    },
+    {
+      title: "This is just a news",
+      url: "/"
+    },
+  ]
+
   return (
     <>
-    <div className="flex w-full gap-6">
+    <Headline news={data} />
+    <div className="flex w-full gap-6 mt-12">
       <DashboardCard iconName="streamline-plump:module" title="Modul Tersedia" content="123" />
       <DashboardCard iconName="streamline-plump:module" title="Modul terakhir dipelajari" content="Pendidikan Agama Islam">
         <button className="hover:cursor-pointer">
