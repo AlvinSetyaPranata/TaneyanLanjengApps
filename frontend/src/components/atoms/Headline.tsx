@@ -21,7 +21,7 @@ export default function Headline(props: headlineProps) {
   const start = {
     x: `-${50 + (props.news.length * 10)}%`,
     transition: {
-      duration: 40,
+      duration: 30,
       repeat: Infinity
     }
   }
