@@ -3,16 +3,21 @@ import type { PropsWithChildren } from 'react';
 
 
 export interface DashboardCardProps extends PropsWithChildren {
-    iconName: IconifyIcon | string;
+    iconName?: IconifyIcon | string;
     title: string;
     content: string;
+    text?: string;
 }
 
 export default function DashboardCard(props: DashboardCardProps) {
   return (
     <div className="rounded-xl border border-gray-300 w-[300px] p-5 bg-white">
         <div className="bg-gray-100 w-max p-3 rounded-lg">
+          {props.iconName ? (
             <Icon icon={props.iconName} width={24} height={24} />
+          ) : (
+            <h2 className='font-bold'>{props.text}</h2>
+          )}
         </div>
         <h4 className='text-gray-500 text-sm mt-8'>{props.title}</h4>
         <div className='flex justify-between items-center'>
