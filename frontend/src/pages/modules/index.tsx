@@ -1,6 +1,7 @@
 import { Icon } from "@iconify/react"
 import { useState } from "react"
-import Breadcrumps from "../components/atoms/Breadcrumps"
+import Breadcrumps from "../../components/atoms/Breadcrumps"
+import { Link } from "react-router-dom"
 
 
 export default function Modules() {
@@ -45,7 +46,7 @@ export default function Modules() {
           {/* btn content */}
           <div className="flex items-center justify-between w-full">
             <h3 className="ml-4">Pendidikan Aswaja</h3>
-            <button className="group-hover:opacity-100 hover:cursor-pointer opacity-0 rounded-sm bg-black text-white px-3 py-2 text-sm">Detail Kelas</button>
+            <Link to="/modules/112" className="group-hover:opacity-100 hover:cursor-pointer opacity-0 rounded-sm bg-black text-white px-3 py-2 text-sm">Detail Kelas</Link>
           </div>
         </div>
       </div>

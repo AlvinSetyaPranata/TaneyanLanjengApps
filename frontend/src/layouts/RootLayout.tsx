@@ -17,7 +17,7 @@ export default function RootLayout() {
               <Icon icon="ci:hamburger-lg" width={24} height={24} className='text-gray-500' />
             </button>
           </header>
-          <main className='bg-gray-100 min-h-screen px-12 py-8'>
+          <main className='bg-gray-50 min-h-screen px-12 py-8'>
             <Outlet />
           </main>
         </div>
