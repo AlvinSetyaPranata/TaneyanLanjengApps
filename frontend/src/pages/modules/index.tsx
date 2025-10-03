@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react"
 import { useState } from "react"
 import Breadcrumps from "../../components/atoms/Breadcrumps"
 import { Link } from "react-router-dom"
+import RootLayout from "../../layouts/RootLayout"
 
 
 export default function Modules() {
@@ -16,7 +17,7 @@ export default function Modules() {
   ]
 
   return (
-    <>
+    <RootLayout>
       {/* <h1 className="text-gray-400">Modul Kelas</h1> */}
       <Breadcrumps urls={urls} />
 
@@ -50,6 +51,6 @@ export default function Modules() {
           </div>
         </div>
       </div>
-    </>
+    </RootLayout>
   )
 }

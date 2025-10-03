@@ -1,9 +1,9 @@
-import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/molecules/Sidebar'
 import { Icon } from '@iconify/react'
-import { useState } from 'react'
+import { useState, type PropsWithChildren } from 'react'
 
-export default function RootLayout() {
+
+export default function RootLayout(props: PropsWithChildren) {
 
   const [isSidebarOpened, setIsSidebarOpened] = useState(true)
 
@@ -18,7 +18,7 @@ export default function RootLayout() {
             </button>
           </header>
           <main className='bg-gray-50 min-h-screen px-12 py-8'>
-            <Outlet />
+            {props.children}
           </main>
         </div>
     </div>

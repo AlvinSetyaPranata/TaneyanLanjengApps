@@ -1,6 +1,7 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Breadcrumps from "../../components/atoms/Breadcrumps";
 import { Icon } from "@iconify/react";
+import DetailLayout from "../../layouts/DetailLayout";
 
 export default function ModuleDetail() {
   const { id } = useParams();
@@ -17,9 +18,12 @@ export default function ModuleDetail() {
   ];
 
   return (
-    <>
+    <DetailLayout title="Pendidikan Aswaja">
       <Breadcrumps urls={urls} />
-      <h1 className="mt-8 text-3xl font-semibold">Pendidikan Aswaja</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="mt-8 text-3xl font-semibold">Pendidikan Aswaja</h1>
+        <Link className="rounded-md bg-black text-white px-3 py-2 text-sm" to="#">Lanjut Belajar</Link>
+      </div>
 
       <div className="flex w-full justify-between items-start mt-12 gap-12">
         <div className="border-gray-400 border-[0.5px] w-full rounded-md p-4 flex flex-col gap-6">
@@ -27,7 +31,11 @@ export default function ModuleDetail() {
             <h2>Progress Belajar</h2>
             <p>12%</p>
           </div>
-          <div className="bg-gray-300 rounded-full w-full h-[8px]"></div>
+          {/* progress-bar-container */}
+          <div className="bg-gray-300 rounded-full w-full h-[8px]">
+            {/* progress-bar-children */}
+            <div className="h-full w-[12%] bg-yellow-500 rounded-full"></div>
+          </div>
           <div className="flex items-center gap-2">
             <Icon icon="majesticons:clock" className="text-xl text-black" />
             <h3 className="font-medium text-sm">Deadline Belajar: </h3>
@@ -48,7 +56,8 @@ export default function ModuleDetail() {
         </div>
       </div>
 
-      <div className="border-t border-t-gray-300 py-12 mt-24">
+      <div className="border-t border-t-gray-300 py-12 mt-24 flex gap-8">
+        {/* card */}
         <div className="border-gray-400 border-[0.5px] w-full rounded-md p-4 flex flex-col gap-6">
           <div className="flex items-center gap-x-2">
             <Icon className="text-xl" icon="octicon:paste-24" />
@@ -67,7 +76,20 @@ export default function ModuleDetail() {
             </div>
           </div>
         </div>
+        {/* card */}
+        <div className="border-gray-400 border-[0.5px] w-full rounded-md p-4 flex flex-col gap-6">
+          <div className="flex items-center gap-x-2">
+            <Icon className="text-2xl" icon="material-symbols-light:chat" />
+            <h2 className="font-medium">Diskusi Forum</h2>
+          </div>
+
+           <p>Berdikusi tentang apa pertanyaanmu di kelas</p>
+          <div className="flex justify-end mt-4">
+            {/* content */}
+           <Link to="#" className="rounded-md bg-black text-white py-3 px-5 text-sm">Ke Forum Diskusi</Link>
+          </div>
+        </div>
       </div>
-    </>
+    </DetailLayout>
   );
 }
