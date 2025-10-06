@@ -24,9 +24,8 @@ export default function DetailLayout(props: DetailLayoutProps) {
           </div>
         </div>  
 
-        <div className='px-20 py-8'>
           {props.children} 
-        </div>
+
     </>
   )
 }

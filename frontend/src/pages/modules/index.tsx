@@ -47,7 +47,7 @@ export default function Modules() {
           {/* btn content */}
           <div className="flex items-center justify-between w-full">
             <h3 className="ml-4">Pendidikan Aswaja</h3>
-            <Link to="/modules/112" className="group-hover:opacity-100 hover:cursor-pointer opacity-0 rounded-sm bg-black text-white px-3 py-2 text-sm">Detail Kelas</Link>
+            <Link to="/modules/112/corridor" className="group-hover:opacity-100 hover:cursor-pointer opacity-0 rounded-sm bg-black text-white px-3 py-2 text-sm">Detail Kelas</Link>
           </div>
         </div>
       </div>

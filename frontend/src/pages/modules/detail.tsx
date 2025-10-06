@@ -19,10 +19,13 @@ export default function ModuleDetail() {
 
   return (
     <DetailLayout title="Pendidikan Aswaja">
+      <div className="px-12 py-8">
+
+      
       <Breadcrumps urls={urls} />
       <div className="flex justify-between items-center">
         <h1 className="mt-8 text-3xl font-semibold">Pendidikan Aswaja</h1>
-        <Link className="rounded-md bg-black text-white px-3 py-2 text-sm" to="#">Lanjut Belajar</Link>
+        <Link className="rounded-md bg-black text-white px-3 py-2 text-sm" to="/modules/112/lesson/112">Lanjut Belajar</Link>
       </div>
 
       <div className="flex w-full justify-between items-start mt-12 gap-12">
@@ -89,6 +92,7 @@ export default function ModuleDetail() {
            <Link to="#" className="rounded-md bg-black text-white py-3 px-5 text-sm">Ke Forum Diskusi</Link>
           </div>
         </div>
+      </div>
       </div>
     </DetailLayout>
   );
