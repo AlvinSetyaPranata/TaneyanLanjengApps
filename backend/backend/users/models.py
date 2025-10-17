@@ -40,6 +40,3 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'username'
 
     REQUIRED_FIELDS = ['email', 'password', 'full_name', 'institution', 'semester', 'role']
-
-
-

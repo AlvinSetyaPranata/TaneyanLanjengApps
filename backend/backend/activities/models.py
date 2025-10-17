@@ -1,3 +1,20 @@
 from django.db import models
+from users.models import User
+from modules.models import Module
 
-# Create your models here.
+
+class Activity(models.Model):
+    student_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    modules_id = models.ForeignKey(Module, on_delete=models.CASCADE)
+    progress = models.IntegerField(default=0)
+    date_created = models.DateTimeField(auto_now_add=True, editable=False)
+    date_updated = models.DateTimeField(auto_now_add=True, editable=False)
+
+
+class UserOverview(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    last_module_learned = models.ForeignKey(Module, on_delete=models.CASCADE)
+    modules_available = models.ManyToManyField(Activity)
+    date_created = models.DateTimeField(auto_now_add=True, editable=False)
+    date_updated = models.DateTimeField(auto_now_add=True, editable=False)
+

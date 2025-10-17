@@ -11,5 +11,5 @@ class RoleSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'full_name', 'institution', 'semester', 'role']
+        fields = ['id', 'username', 'email', 'password', 'full_name', 'institution', 'semester', 'role']
     
