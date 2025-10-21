@@ -15,4 +15,4 @@ class ActivitySerializer(ModelSerializer):
 class UserOverviewSerializer(ModelSerializer):
     class Meta:
         model = UserOverview
-        fields = ['id', 'user_id', 'last_module_learned', 'modules_available']
+        fields = ['id', 'user_id', 'user_activities', 'last_module_learned_id']

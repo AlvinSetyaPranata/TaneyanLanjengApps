@@ -32,11 +32,20 @@ class User(AbstractBaseUser):
     full_name = models.CharField(max_length=255)
     institution = models.CharField(max_length=100)
     semester = models.IntegerField()
-    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
     date_registered = models.DateTimeField(auto_now_add=True, editable=False)
     date_updated = models.DateTimeField(auto_now_add=True, editable=False)
 
+    objects = UserManager()
 
     USERNAME_FIELD = 'username'
 
-    REQUIRED_FIELDS = ['email', 'password', 'full_name', 'institution', 'semester', 'role']
+    REQUIRED_FIELDS = ['email']
+
+    def has_perm(self, perm, obj=None):
+        return True
+
+    def has_module_perms(self, app_label):
+        return True

@@ -15,5 +15,3 @@ class Lesson(models.Model):
     module_id = models.ForeignKey(Module, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True, editable=False)
     date_updated = models.DateTimeField(auto_now_add=True, editable=False)
-
-
