@@ -5,6 +5,7 @@ import ModuleDetail from './modules/detail'
 import Lesson from './modules/lesson'
 import Login from './Login'
 import Register from './Register'
+import Settings from './Settings'
 import ProtectedRoute from '../components/ProtectedRoute'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
             <Route path="/modules" element={<ProtectedRoute><Modules /></ProtectedRoute>} />
             <Route path="/modules/:module_id/corridor" element={<ProtectedRoute><ModuleDetail /></ProtectedRoute>} />
             <Route path="/modules/:module_id/lesson/:lesson_id" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         </Routes>
     </BrowserRouter>
   )

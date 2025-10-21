@@ -1,10 +1,12 @@
 import Sidebar from '../components/molecules/Sidebar'
 import { Icon } from '@iconify/react'
 import { useState, useEffect, useRef, type PropsWithChildren } from 'react'
+import { logout } from '../utils/auth'
+import { useNavigate } from 'react-router-dom'
 
 
 export default function RootLayout(props: PropsWithChildren) {
-
+  const navigate = useNavigate()
   const [isSidebarOpened, setIsSidebarOpened] = useState(true)
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -27,11 +29,13 @@ export default function RootLayout(props: PropsWithChildren) {
   }, [isAccountDropdownOpen])
 
   return (
-    <div className='flex items-start'>
-        {/* this will be a components that appears on main layout */}
+    <div className='flex h-screen overflow-hidden'>
+        {/* Sidebar - Fixed full height */}
         <Sidebar isExpanded={isSidebarOpened} />
-        <div className='flex-1'>
-          <header className='w-full flex justify-between items-center py-4 px-6'>
+        
+        {/* Main content area - Scrollable */}
+        <div className='flex-1 flex flex-col h-screen overflow-hidden'>
+          <header className='flex-shrink-0 w-full flex justify-between items-center py-4 px-6 bg-white border-b border-gray-200'>
             <button onClick={() => setIsSidebarOpened((state) => !state)} className='p-2 rounded-md border border-gray-300 hover:cursor-pointer'>
               <Icon icon="ci:hamburger-lg" width={24} height={24} className='text-gray-500' />
             </button>
@@ -77,7 +81,13 @@ export default function RootLayout(props: PropsWithChildren) {
 
                     {/* Logout */}
                     <div className='border-t border-gray-200'>
-                      <button className='flex items-center gap-x-3 px-4 py-3 w-full hover:bg-red-50 transition-colors'>
+                      <button 
+                        onClick={() => {
+                          logout()
+                          navigate('/login')
+                        }}
+                        className='flex items-center gap-x-3 px-4 py-3 w-full hover:bg-red-50 transition-colors'
+                      >
                         <Icon icon="mdi:logout" width={24} height={24} className='text-red-500' />
                         <span className='text-red-500 font-medium'>Keluar</span>
                       </button>
@@ -87,7 +97,9 @@ export default function RootLayout(props: PropsWithChildren) {
               </div>
             </div>
           </header>
-          <main className='bg-gray-50 min-h-screen px-12 py-8'>
+          
+          {/* Scrollable main content */}
+          <main className='flex-1 bg-gray-50 px-12 py-8 overflow-y-auto'>
             {props.children}
           </main>
         </div>

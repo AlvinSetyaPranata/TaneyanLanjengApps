@@ -4,6 +4,7 @@ import { z } from 'zod';
 import Input from '../components/atoms/Input';
 import Button from '../components/atoms/Button';
 import Select from '../components/atoms/Select';
+import { setAuthData } from '../utils/auth';
 
 interface RegisterForm {
   username: string;
@@ -121,10 +122,8 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store tokens in localStorage
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('refresh_token', data.refresh_token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        // Store tokens and user data in localStorage
+        setAuthData(data.access_token, data.refresh_token, data.user);
         
         // Redirect to home page or login
         navigate('/');

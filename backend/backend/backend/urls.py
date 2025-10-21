@@ -10,7 +10,9 @@ from users.views import (
 )
 from modules.views import (
     ModuleView,
-    LessonView
+    LessonView,
+    modules_overview,
+    module_detail_with_lessons
 )
 from activities.views import (
     UserOverviewView,
@@ -28,7 +30,11 @@ router.register(r'overviews', UserOverviewView)
 
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    # Specific module endpoints must come BEFORE router.urls to avoid conflicts
+    path('api/modules/overview', modules_overview, name='modules-overview'),
+    path('api/modules/<int:module_id>/detail', module_detail_with_lessons, name='module-detail-with-lessons'),
     path('api/login', LoginView.as_view(), name='login'),
     path('api/register', RegisterView.as_view(), name='register'),
+    # Router URLs (will match /api/modules, /api/modules/<id>, etc.)
+    path('api/', include(router.urls)),
 ]

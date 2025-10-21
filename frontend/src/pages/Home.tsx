@@ -1,10 +1,16 @@
 import { Icon } from "@iconify/react";
+import { useState, useEffect } from "react";
 import DashboardCard from "../components/atoms/DashboardCard";
 import Headline from "../components/atoms/Headline";
 import RootLayout from "../layouts/RootLayout";
 import { useNavigate } from "react-router-dom";
+import { fetchModulesOverview } from "../utils/api";
 
 export default function Home() {
+  const navigate = useNavigate();
+  const [modulesCount, setModulesCount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
+  
   const data = [
     {
       title: "This is just a news",
@@ -20,7 +26,22 @@ export default function Home() {
     },
   ];
 
-  const navigate  = useNavigate()
+  // Fetch modules count on component mount
+  useEffect(() => {
+    async function loadModulesCount() {
+      try {
+        setIsLoading(true);
+        const response = await fetchModulesOverview();
+        setModulesCount(response.count);
+      } catch (err) {
+        console.error('Error fetching modules count:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadModulesCount();
+  }, []);
 
   return (
     <RootLayout>
@@ -29,7 +50,7 @@ export default function Home() {
         <DashboardCard
           iconName="streamline-plump:module"
           title="Modul Tersedia"
-          content="123"
+          content={isLoading ? "..." : modulesCount.toString()}
         />
         <DashboardCard
           text="90%"
