@@ -7,6 +7,7 @@ export interface User {
   full_name: string;
   institution: string;
   semester: number;
+  profile_photo?: string | null;
   role: number | null;
 }
 

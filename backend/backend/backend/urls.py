@@ -6,7 +6,10 @@ from users.views import (
     RoleView,
     UserView,
     LoginView,
-    RegisterView
+    RegisterView,
+    get_user_profile,
+    update_user_profile,
+    change_password
 )
 from modules.views import (
     ModuleView,
@@ -35,6 +38,10 @@ urlpatterns = [
     path('api/modules/<int:module_id>/detail', module_detail_with_lessons, name='module-detail-with-lessons'),
     path('api/login', LoginView.as_view(), name='login'),
     path('api/register', RegisterView.as_view(), name='register'),
+    # User profile endpoints
+    path('api/user/profile', get_user_profile, name='user-profile'),
+    path('api/user/profile/update', update_user_profile, name='update-user-profile'),
+    path('api/user/password/change', change_password, name='change-password'),
     # Router URLs (will match /api/modules, /api/modules/<id>, etc.)
     path('api/', include(router.urls)),
 ]

@@ -1,4 +1,4 @@
-// API service for modules
+// API service for modules and user management
 
 import { authFetch } from './auth';
 import type { ModulesOverviewResponse, ModuleDetailResponse } from '../types/modules';
@@ -36,3 +36,6 @@ export async function fetchModuleDetail(moduleId: number): Promise<ModuleDetailR
   
   return await response.json();
 }
+
+// Re-export user service functions for convenience
+export { getUserProfile, updateUserProfile, changePassword } from '../services/userService';

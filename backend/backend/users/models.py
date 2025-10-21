@@ -32,6 +32,7 @@ class User(AbstractBaseUser):
     full_name = models.CharField(max_length=255)
     institution = models.CharField(max_length=100)
     semester = models.IntegerField()
+    profile_photo = models.URLField(max_length=500, null=True, blank=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

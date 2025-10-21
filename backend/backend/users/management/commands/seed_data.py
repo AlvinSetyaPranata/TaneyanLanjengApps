@@ -39,7 +39,8 @@ class Command(BaseCommand):
             password='admin123',
             full_name='Administrator',
             institution='Taneyan Lanjeng University',
-            semester=0
+            semester=0,
+            profile_photo='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400'
         )
         admin_user.role = role_admin
         admin_user.save()
@@ -51,7 +52,8 @@ class Command(BaseCommand):
             password='teacher123',
             full_name='John Doe',
             institution='Taneyan Lanjeng University',
-            semester=0
+            semester=0,
+            profile_photo='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'
         )
         teacher1.role = role_teacher
         teacher1.save()
@@ -62,7 +64,8 @@ class Command(BaseCommand):
             password='teacher123',
             full_name='Jane Smith',
             institution='Taneyan Lanjeng University',
-            semester=0
+            semester=0,
+            profile_photo='https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400'
         )
         teacher2.role = role_teacher
         teacher2.save()
@@ -70,21 +73,22 @@ class Command(BaseCommand):
         # Student users
         students = []
         student_data = [
-            ('student_alice', 'alice@student.edu', 'Alice Johnson', 'Taneyan Lanjeng University', 3),
-            ('student_bob', 'bob@student.edu', 'Bob Wilson', 'Taneyan Lanjeng University', 2),
-            ('student_charlie', 'charlie@student.edu', 'Charlie Brown', 'Taneyan Lanjeng University', 4),
-            ('student_diana', 'diana@student.edu', 'Diana Prince', 'State University', 5),
-            ('student_ethan', 'ethan@student.edu', 'Ethan Hunt', 'State University', 1),
+            ('student_alice', 'alice@student.edu', 'Alice Johnson', 'Taneyan Lanjeng University', 3, 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400'),
+            ('student_bob', 'bob@student.edu', 'Bob Wilson', 'Taneyan Lanjeng University', 2, 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400'),
+            ('student_charlie', 'charlie@student.edu', 'Charlie Brown', 'Taneyan Lanjeng University', 4, 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400'),
+            ('student_diana', 'diana@student.edu', 'Diana Prince', 'State University', 5, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400'),
+            ('student_ethan', 'ethan@student.edu', 'Ethan Hunt', 'State University', 1, 'https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=400'),
         ]
 
-        for username, email, full_name, institution, semester in student_data:
+        for username, email, full_name, institution, semester, profile_photo in student_data:
             student = User.objects.create_user(
                 username=username,
                 email=email,
                 password='student123',
                 full_name=full_name,
                 institution=institution,
-                semester=semester
+                semester=semester,
+                profile_photo=profile_photo
             )
             student.role = role_student
             student.save()

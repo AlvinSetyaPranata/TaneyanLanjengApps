@@ -5,7 +5,8 @@ from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.status import (
     HTTP_401_UNAUTHORIZED,
     HTTP_400_BAD_REQUEST,
@@ -109,4 +110,89 @@ class RegisterView(APIView):
             {"message": "Pendaftaran gagal", "errors": serializer.errors},
             status=HTTP_400_BAD_REQUEST
         )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_profile(request):
+    """
+    Get the current authenticated user's profile
+    """
+    user = request.user
+    user_data = UserSerializer(user).data
+    return Response({
+        "message": "Profil berhasil diambil",
+        "user": user_data
+    }, status=HTTP_200_OK)
+
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def update_user_profile(request):
+    """
+    Update the current authenticated user's profile
+    """
+    user = request.user
+    
+    # Only allow updating certain fields
+    allowed_fields = ['full_name', 'email', 'institution', 'semester', 'profile_photo']
+    update_data = {}
+    
+    for field in allowed_fields:
+        if field in request.data:
+            update_data[field] = request.data[field]
+    
+    serializer = UserSerializer(user, data=update_data, partial=True)
+    
+    if serializer.is_valid():
+        serializer.save()
+        return Response({
+            "message": "Profil berhasil diperbarui",
+            "user": serializer.data
+        }, status=HTTP_200_OK)
+    
+    return Response(
+        {"message": "Gagal memperbarui profil", "errors": serializer.errors},
+        status=HTTP_400_BAD_REQUEST
+    )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    """
+    Change the current authenticated user's password
+    """
+    user = request.user
+    current_password = request.data.get('current_password')
+    new_password = request.data.get('new_password')
+    
+    if not current_password or not new_password:
+        return Response(
+            {"message": "Password saat ini dan password baru wajib diisi"},
+            status=HTTP_400_BAD_REQUEST
+        )
+    
+    # Check if current password is correct
+    if not user.check_password(current_password):
+        return Response(
+            {"message": "Password saat ini salah"},
+            status=HTTP_400_BAD_REQUEST
+        )
+    
+    # Validate new password length
+    if len(new_password) < 8:
+        return Response(
+            {"message": "Password baru harus minimal 8 karakter"},
+            status=HTTP_400_BAD_REQUEST
+        )
+    
+    # Set new password
+    user.set_password(new_password)
+    user.save()
+    
+    return Response(
+        {"message": "Password berhasil diubah"},
+        status=HTTP_200_OK
+    )
 

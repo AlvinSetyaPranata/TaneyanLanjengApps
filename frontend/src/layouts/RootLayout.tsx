@@ -1,7 +1,7 @@
 import Sidebar from '../components/molecules/Sidebar'
 import { Icon } from '@iconify/react'
 import { useState, useEffect, useRef, type PropsWithChildren } from 'react'
-import { logout } from '../utils/auth'
+import { logout, getUser } from '../utils/auth'
 import { useNavigate } from 'react-router-dom'
 
 
@@ -10,6 +10,7 @@ export default function RootLayout(props: PropsWithChildren) {
   const [isSidebarOpened, setIsSidebarOpened] = useState(true)
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const user = getUser()
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -40,13 +41,8 @@ export default function RootLayout(props: PropsWithChildren) {
               <Icon icon="ci:hamburger-lg" width={24} height={24} className='text-gray-500' />
             </button>
 
-            {/* Right side: Notification and Account */}
+            {/* Right side: Account */}
             <div className='flex items-center gap-x-4'>
-              {/* Notification Button */}
-              <button className='p-2 hover:bg-gray-100 rounded-lg transition-colors'>
-                <Icon icon="ph:bell" width={24} height={24} className='text-gray-700' />
-              </button>
-
               {/* Account Dropdown */}
               <div className='relative' ref={dropdownRef}>
                 <button 
@@ -54,9 +50,12 @@ export default function RootLayout(props: PropsWithChildren) {
                   className='flex items-center gap-x-2 hover:bg-gray-100 rounded-lg p-2 transition-colors'
                 >
                   <img 
-                    src="https://ui-avatars.com/api/?name=User+Account&background=random" 
+                    src={user?.profile_photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'User')}&background=random`}
                     alt="Profile" 
                     className='w-10 h-10 rounded-full object-cover'
+                    onError={(e) => {
+                      e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'User')}&background=random`;
+                    }}
                   />
                   <Icon 
                     icon="mingcute:down-fill" 
