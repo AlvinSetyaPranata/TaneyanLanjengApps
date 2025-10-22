@@ -1,10 +1,11 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import Input from '../components/atoms/Input';
 import Button from '../components/atoms/Button';
 import Select from '../components/atoms/Select';
 import { setAuthData } from '../utils/auth';
+import { register } from '../services/authService';
 
 interface RegisterForm {
   username: string;
@@ -37,9 +38,7 @@ const registerSchema = z.object({
   institution: z.string({
     message: 'Institusi wajib diisi',
   }).min(1, { message: 'Institusi wajib diisi' }),
-  semester: z.string({
-    message: 'Semester wajib dipilih',
-  }).min(1, { message: 'Semester wajib dipilih' }),
+  semester: z.string().optional(),  // Made optional for teachers
   role: z.string({
     message: 'Peran wajib dipilih',
   }).min(1, { message: 'Peran wajib dipilih' }),
@@ -76,7 +75,20 @@ export default function Register() {
 
   const validate = (): boolean => {
     try {
-      registerSchema.parse(formData);
+      // For teachers, semester is optional
+      const dataToValidate = { ...formData };
+      if (isTeacherRole() && !dataToValidate.semester) {
+        dataToValidate.semester = '0';  // Set default for validation
+      }
+      
+      registerSchema.parse(dataToValidate);
+      
+      // Additional validation: semester required for non-teacher roles
+      if (!isTeacherRole() && !formData.semester) {
+        setErrors({ semester: 'Semester wajib dipilih' });
+        return false;
+      }
+      
       setErrors({});
       return true;
     } catch (error) {
@@ -106,42 +118,40 @@ export default function Register() {
       // Prepare data for API (exclude confirmPassword)
       const { confirmPassword, ...registerData } = formData;
       
-      const response = await fetch('http://localhost:8000/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          ...registerData,
-          semester: parseInt(registerData.semester),
-          role: parseInt(registerData.role),
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store tokens and user data in localStorage
-        setAuthData(data.access_token, data.refresh_token, data.user);
-        
-        // Redirect to home page or login
-        navigate('/');
-      } else {
-        // Handle validation errors from backend
-        if (data.errors) {
-          const backendErrors: Partial<RegisterForm> = {};
-          Object.keys(data.errors).forEach((key) => {
-            backendErrors[key as keyof RegisterForm] = data.errors[key][0];
-          });
-          setErrors(backendErrors);
-        } else {
-          setErrors({ username: data.message || 'Pendaftaran gagal' });
-        }
+      // Prepare registration payload
+      const payload: any = {
+        ...registerData,
+        role: parseInt(registerData.role),
+      };
+      
+      // Only include semester if not a teacher or if semester is provided
+      if (!isTeacherRole() && registerData.semester) {
+        payload.semester = parseInt(registerData.semester);
+      } else if (isTeacherRole()) {
+        payload.semester = 0;  // Set to 0 for teachers
       }
-    } catch (error) {
+      
+      // Call register service
+      const data = await register(payload);
+
+      // Store tokens and user data in localStorage
+      setAuthData(data.access_token, data.refresh_token, data.user);
+      
+      // Redirect to home page
+      navigate('/');
+    } catch (error: any) {
       console.error('Registration error:', error);
-      setErrors({ username: 'Terjadi kesalahan. Silakan coba lagi.' });
+      
+      // Handle validation errors from backend
+      if (error.errors) {
+        const backendErrors: Partial<RegisterForm> = {};
+        Object.keys(error.errors).forEach((key) => {
+          backendErrors[key as keyof RegisterForm] = error.errors[key][0];
+        });
+        setErrors(backendErrors);
+      } else {
+        setErrors({ username: error.message || 'Terjadi kesalahan. Silakan coba lagi.' });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -153,12 +163,54 @@ export default function Register() {
     label: `Semester ${i + 1}`,
   }));
 
-  // Role options (based on the seeded data: Admin, Teacher, Student)
-  const roleOptions = [
-    { value: '1', label: 'Admin' },
-    { value: '2', label: 'Pengajar' },
-    { value: '3', label: 'Siswa' },
-  ];
+  // Role options (based on the actual seeded data IDs from database)
+  // Note: Admin role is excluded as it can only be created via terminal
+  const [roleOptions, setRoleOptions] = useState<Array<{ value: string; label: string }>>([]);
+  const [isLoadingRoles, setIsLoadingRoles] = useState(true);
+
+  // Fetch roles from backend on component mount
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/roles', {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const roles = await response.json();
+          console.log('Fetched roles:', roles);  // Debug log
+          // Filter out Admin role
+          const filteredRoles = roles
+            .filter((role: any) => role.name !== 'Admin')
+            .map((role: any) => ({
+              value: role.id.toString(),
+              label: role.name === 'Teacher' ? 'Pengajar' : role.name === 'Student' ? 'Siswa' : role.name
+            }));
+          console.log('Filtered roles:', filteredRoles);  // Debug log
+          setRoleOptions(filteredRoles);
+        } else {
+          console.error('Failed to fetch roles:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+        // Fallback to empty array - user will see error message
+        setRoleOptions([]);
+      } finally {
+        setIsLoadingRoles(false);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
+  // Check if selected role is Teacher
+  const isTeacherRole = () => {
+    if (!formData.role) return false;
+    const selectedRole = roleOptions.find(r => r.value === formData.role);
+    return selectedRole?.label === 'Pengajar';
+  };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
@@ -247,15 +299,17 @@ export default function Register() {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <Select
-              label="Semester"
-              name="semester"
-              value={formData.semester}
-              onChange={handleChange}
-              error={errors.semester}
-              options={semesterOptions}
-              required
-            />
+            {!isTeacherRole() && (
+              <Select
+                label="Semester"
+                name="semester"
+                value={formData.semester}
+                onChange={handleChange}
+                error={errors.semester}
+                options={semesterOptions}
+                required={!isTeacherRole()}
+              />
+            )}
 
             <Select
               label="Peran"
@@ -265,7 +319,14 @@ export default function Register() {
               error={errors.role}
               options={roleOptions}
               required
+              disabled={isLoadingRoles}
             />
+            {isLoadingRoles && (
+              <p className="text-xs text-gray-500 mt-1">Memuat peran...</p>
+            )}
+            {!isLoadingRoles && roleOptions.length === 0 && (
+              <p className="text-xs text-red-500 mt-1">Gagal memuat peran. Silakan refresh halaman.</p>
+            )}
           </div>
 
           <div className="pt-2">

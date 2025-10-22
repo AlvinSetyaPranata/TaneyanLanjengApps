@@ -31,7 +31,8 @@ from .serializers import (
 class RoleView(ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    authentication_classes = [IsAdminUser]
+    permission_classes = [AllowAny]  # Allow public access for registration
+    http_method_names = ['get', 'head', 'options']  # Read-only for public
 
 class UserView(ModelViewSet):
     queryset = User.objects.all()
@@ -90,6 +91,22 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
+        # Check if trying to register as Admin (prevent admin registration via API)
+        role_id = request.data.get('role')
+        if role_id:
+            try:
+                role = Role.objects.get(id=role_id)
+                if role.name == 'Admin':
+                    return Response(
+                        {"message": "Admin tidak dapat didaftarkan melalui formulir pendaftaran. Hubungi administrator sistem."},
+                        status=HTTP_400_BAD_REQUEST
+                    )
+            except Role.DoesNotExist:
+                return Response(
+                    {"message": "Peran yang dipilih tidak valid"},
+                    status=HTTP_400_BAD_REQUEST
+                )
+        
         serializer = RegisterSerializer(data=request.data)
         
         if serializer.is_valid():

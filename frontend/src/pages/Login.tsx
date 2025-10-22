@@ -4,6 +4,7 @@ import { z } from 'zod';
 import Input from '../components/atoms/Input';
 import Button from '../components/atoms/Button';
 import { setAuthData } from '../utils/auth';
+import { login } from '../services/authService';
 
 interface LoginForm {
   username: string;
@@ -67,29 +68,17 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(formData),
-      });
+      // Call login service
+      const data = await login(formData);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store tokens and user data in localStorage
-        setAuthData(data.access_token, data.refresh_token, data.user);
-        
-        // Redirect to home page
-        navigate('/');
-      } else {
-        setErrors({ username: data.message || 'Nama pengguna atau kata sandi salah' });
-      }
-    } catch (error) {
+      // Store tokens and user data in localStorage
+      setAuthData(data.access_token, data.refresh_token, data.user);
+      
+      // Redirect to home page
+      navigate('/');
+    } catch (error: any) {
       console.error('Login error:', error);
-      setErrors({ username: 'Terjadi kesalahan. Silakan coba lagi.' });
+      setErrors({ username: error.message || 'Terjadi kesalahan. Silakan coba lagi.' });
     } finally {
       setIsLoading(false);
     }

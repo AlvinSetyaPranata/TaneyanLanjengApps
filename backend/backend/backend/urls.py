@@ -15,11 +15,14 @@ from modules.views import (
     ModuleView,
     LessonView,
     modules_overview,
-    module_detail_with_lessons
+    module_detail_with_lessons,
+    lesson_detail,
+    teacher_stats
 )
 from activities.views import (
     UserOverviewView,
-    ActivityView
+    ActivityView,
+    student_stats
 )
 
 router = DefaultRouter(trailing_slash=False)
@@ -36,6 +39,9 @@ urlpatterns = [
     # Specific module endpoints must come BEFORE router.urls to avoid conflicts
     path('api/modules/overview', modules_overview, name='modules-overview'),
     path('api/modules/<int:module_id>/detail', module_detail_with_lessons, name='module-detail-with-lessons'),
+    path('api/modules/<int:module_id>/lessons/<int:lesson_id>', lesson_detail, name='lesson-detail'),
+    path('api/teacher/stats', teacher_stats, name='teacher-stats'),
+    path('api/student/stats', student_stats, name='student-stats'),
     path('api/login', LoginView.as_view(), name='login'),
     path('api/register', RegisterView.as_view(), name='register'),
     # User profile endpoints

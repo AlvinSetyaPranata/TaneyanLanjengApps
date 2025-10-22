@@ -39,3 +39,6 @@ export async function fetchModuleDetail(moduleId: number): Promise<ModuleDetailR
 
 // Re-export user service functions for convenience
 export { getUserProfile, updateUserProfile, changePassword } from '../services/userService';
+
+// Re-export auth service functions for convenience
+export { login, register, refreshAccessToken } from '../services/authService';
