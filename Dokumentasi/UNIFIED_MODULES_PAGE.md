@@ -162,7 +162,7 @@ const filteredModules = modules.filter(module => {
 ```
 Modules Component
 ├── Role Detection (useEffect)
-│   └── getUser() → isTeacher / isStudent
+│   └── getUser() → isTeacher / isStudent (dynamically determined)
 │
 ├── Data Fetching (useEffect)
 │   ├── fetchModulesOverview()

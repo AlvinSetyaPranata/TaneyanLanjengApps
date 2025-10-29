@@ -52,11 +52,36 @@ export default function Home() {
   const [teacherStats, setTeacherStats] = useState<TeacherStats | null>(null);
   const [studentStats, setStudentStats] = useState<StudentStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [roles, setRoles] = useState<{[key: string]: number}>({});
+  const [rolesLoaded, setRolesLoaded] = useState(false);
   
-  // Role IDs: 1=Admin, 2=Teacher, 3=Student
-  const isTeacher = user?.role === 2;
-  const isStudent = user?.role === 3;
-  const isAdmin = user?.role === 1;
+  // Fetch roles on component mount
+  useEffect(() => {
+    async function fetchRoles() {
+      try {
+        const response = await fetch('http://localhost:8000/api/roles/');
+        if (response.ok) {
+          const rolesData = await response.json();
+          const roleMap: {[key: string]: number} = {};
+          rolesData.forEach((role: any) => {
+            roleMap[role.name] = role.id;
+          });
+          setRoles(roleMap);
+        }
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+      } finally {
+        setRolesLoaded(true);
+      }
+    }
+    
+    fetchRoles();
+  }, []);
+  
+  // Role detection based on actual role IDs from backend
+  const isTeacher = rolesLoaded && roles.Teacher && user?.role === roles.Teacher;
+  const isStudent = rolesLoaded && roles.Student && user?.role === roles.Student;
+  const isAdmin = rolesLoaded && roles.Admin && user?.role === roles.Admin;
   
   const data = [
     {
@@ -75,6 +100,9 @@ export default function Home() {
 
   // Fetch stats based on user role
   useEffect(() => {
+    // Don't fetch stats until roles are loaded
+    if (!rolesLoaded) return;
+    
     async function loadStats() {
       // Don't fetch if no user or admin
       if (!user || isAdmin) {
@@ -108,7 +136,21 @@ export default function Home() {
     }
 
     loadStats();
-  }, [isTeacher, isStudent, isAdmin]);
+  }, [isTeacher, isStudent, isAdmin, rolesLoaded]);
+
+  // Loading state while roles are being fetched
+  if (!rolesLoaded) {
+    return (
+      <RootLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <Icon icon="line-md:loading-loop" className="text-6xl text-black mx-auto mb-4" />
+            <p className="text-gray-600">Memuat peran...</p>
+          </div>
+        </div>
+      </RootLayout>
+    );
+  }
 
   // Loading state (before role detection)
   if (!user || isLoading && !teacherStats && !studentStats) {

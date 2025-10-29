@@ -59,7 +59,7 @@ Two main pages have been updated to use conditional rendering based on user role
   - Shows only own modules
 - **Actions**: Detail | Edit | Delete buttons
 
-#### 👨‍🎓 Student View (Role = 3)
+#### 👨‍🎓 Student View (Role = dynamic)
 - **Header**: None (just tabs)
 - **Tabs**: 2 tabs
   1. Belum Selesai (progress < 100%)
@@ -77,11 +77,12 @@ Two main pages have been updated to use conditional rendering based on user role
 Both pages use the same conditional rendering pattern:
 
 ```typescript
-// 1. Get user and detect role
+// 1. Get user and detect role dynamically
 const user = getUser()
-const isTeacher = user?.role === 2
-const isStudent = user?.role === 3
-const isAdmin = user?.role === 1
+// Fetch actual role IDs from backend API
+// const isTeacher = user?.role === roles.Teacher
+// const isStudent = user?.role === roles.Student
+// const isAdmin = user?.role === roles.Admin
 
 // 2. Fetch role-specific data
 useEffect(() => {

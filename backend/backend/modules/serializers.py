@@ -20,14 +20,14 @@ class LessonCreateUpdateSerializer(ModelSerializer):
 
 
 class ModuleSerializer(ModelSerializer):
-    author_name = CharField(source='author_id.full_name', read_only=True)
+    author_name = CharField(source='author.full_name', read_only=True)
     lessons_count = SerializerMethodField()
     has_exam = SerializerMethodField()
     exam_count = SerializerMethodField()
     
     class Meta:
         model = Module
-        fields = ["id", "title", "description", "deadline", "author_id", "author_name", 
+        fields = ["id", "title", "description", "deadline", "author", "author_name", 
                   "cover_image", "is_published", "lessons_count", "has_exam", "exam_count", 
                   "date_created", "date_updated"]
         read_only_fields = ["id", "author_name", "lessons_count", "has_exam", "exam_count", 
@@ -47,28 +47,28 @@ class ModuleCreateUpdateSerializer(ModelSerializer):
     """Serializer for creating and updating modules"""
     class Meta:
         model = Module
-        fields = ["title", "description", "deadline", "cover_image", "is_published"]
+        fields = ["title", "description", "deadline", "cover_image", "is_published", "author"]
 
 
 class ModuleWithLessonsSerializer(ModelSerializer):
     """Serializer for modules with nested lessons"""
     lessons = LessonSerializer(many=True, read_only=True)
-    author_name = CharField(source='author_id.full_name', read_only=True)
+    author_name = CharField(source='author.full_name', read_only=True)
     
     class Meta:
         model = Module
-        fields = ["id", "title", "description", "deadline", "author_id", "author_name", "cover_image", "is_published", "date_created", "date_updated", "lessons"]
+        fields = ["id", "title", "description", "deadline", "author", "author_name", "cover_image", "is_published", "date_created", "date_updated", "lessons"]
 
 
 class ModuleWithProgressSerializer(ModelSerializer):
     """Serializer for modules with nested lessons and user progress"""
     lessons = LessonSerializer(many=True, read_only=True)
     progress = SerializerMethodField()
-    author_name = CharField(source='author_id.full_name', read_only=True)
+    author_name = CharField(source='author.full_name', read_only=True)
     
     class Meta:
         model = Module
-        fields = ["id", "title", "description", "deadline", "author_id", "author_name", "cover_image", "is_published", "date_created", "date_updated", "lessons", "progress"]
+        fields = ["id", "title", "description", "deadline", "author", "author_name", "cover_image", "is_published", "date_created", "date_updated", "lessons", "progress"]
     
     def get_progress(self, obj):
         """Get user's progress for this module"""

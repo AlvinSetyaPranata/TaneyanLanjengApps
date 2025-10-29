@@ -38,7 +38,7 @@ export interface AuthErrorResponse {
  * @returns Promise with auth response
  */
 export async function login(credentials: LoginRequest): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/login`, {
+  const response = await fetch(`${API_BASE_URL}/login/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export async function login(credentials: LoginRequest): Promise<AuthResponse> {
  * @returns Promise with auth response
  */
 export async function register(userData: RegisterRequest): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/register`, {
+  const response = await fetch(`${API_BASE_URL}/register/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ export async function register(userData: RegisterRequest): Promise<AuthResponse>
  * @returns Promise with new access token
  */
 export async function refreshAccessToken(refreshToken: string): Promise<{ access_token: string }> {
-  const response = await fetch(`${API_BASE_URL}/token/refresh`, {
+  const response = await fetch(`${API_BASE_URL}/token/refresh/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

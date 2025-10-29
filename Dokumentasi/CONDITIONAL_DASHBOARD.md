@@ -13,9 +13,10 @@ The homepage/dashboard (`/`) uses conditional rendering to display role-specific
 ### Role Detection
 ```typescript
 const user = getUser()
-const isTeacher = user?.role === 2  // Teacher
-const isStudent = user?.role === 3  // Student
-const isAdmin = user?.role === 1    // Admin
+// Role detection should be dynamic based on actual role IDs from backend
+// const isTeacher = user?.role === roles.Teacher
+// const isStudent = user?.role === roles.Student
+// const isAdmin = user?.role === roles.Admin
 ```
 
 ---

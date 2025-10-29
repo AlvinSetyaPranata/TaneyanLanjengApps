@@ -7,7 +7,7 @@ class Module(models.Model):
     title = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
     deadline = models.DateTimeField()
-    author_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='modules')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='modules')
     cover_image = models.URLField(max_length=500, blank=True, null=True)
     is_published = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True, editable=False)

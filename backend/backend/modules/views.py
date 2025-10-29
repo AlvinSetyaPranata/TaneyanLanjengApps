@@ -184,16 +184,16 @@ def teacher_stats(request):
     user = request.user
     
     # Get teacher's modules
-    teacher_modules = Module.objects.filter(author_id=user)
+    teacher_modules = Module.objects.filter(author=user)
     total_modules = teacher_modules.count()
     
     # Get total lessons created by teacher
-    total_lessons = Lesson.objects.filter(module_id__author_id=user).count()
+    total_lessons = Lesson.objects.filter(module_id__author=user).count()
     
     # Get total students enrolled (unique students with activities on teacher's modules)
     from activities.models import Activity
     total_students = Activity.objects.filter(
-        modules_id__author_id=user
+        modules_id__author=user
     ).values('student_id').distinct().count()
     
     # Get last module created
@@ -221,7 +221,7 @@ def teacher_stats(request):
     ).order_by('month')
     
     monthly_lessons = Lesson.objects.filter(
-        module_id__author_id=user,
+        module_id__author=user,
         date_created__gte=six_months_ago
     ).annotate(
         month=TruncMonth('date_created')

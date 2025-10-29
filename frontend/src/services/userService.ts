@@ -32,7 +32,7 @@ export interface PasswordChangeResponse {
  * @returns Promise with user profile data
  */
 export async function getUserProfile(): Promise<UserProfileResponse> {
-  const response = await authFetch(`${API_BASE_URL}/user/profile`);
+  const response = await authFetch(`${API_BASE_URL}/user/profile/`);
   
   if (!response.ok) {
     throw new Error('Failed to fetch user profile');
@@ -47,7 +47,7 @@ export async function getUserProfile(): Promise<UserProfileResponse> {
  * @returns Promise with updated user data
  */
 export async function updateUserProfile(profileData: UpdateProfileData): Promise<UserProfileResponse> {
-  const response = await authFetch(`${API_BASE_URL}/user/profile/update`, {
+  const response = await authFetch(`${API_BASE_URL}/user/profile/update/`, {
     method: 'PUT',
     body: JSON.stringify(profileData),
   });
@@ -66,7 +66,7 @@ export async function updateUserProfile(profileData: UpdateProfileData): Promise
  * @returns Promise with success message
  */
 export async function changePassword(passwordData: ChangePasswordData): Promise<PasswordChangeResponse> {
-  const response = await authFetch(`${API_BASE_URL}/user/password/change`, {
+  const response = await authFetch(`${API_BASE_URL}/user/password/change/`, {
     method: 'POST',
     body: JSON.stringify(passwordData),
   });

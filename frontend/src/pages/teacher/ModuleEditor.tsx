@@ -83,7 +83,7 @@ export default function ModuleEditor() {
         deadline: new Date(formData.deadline).toISOString(),
         cover_image: formData.cover_image || null,
         is_published: formData.is_published,
-        ...(module_id ? {} : { author_id: user?.id })
+        ...(module_id ? {} : { author: user?.id })
       }
       
       const url = module_id 

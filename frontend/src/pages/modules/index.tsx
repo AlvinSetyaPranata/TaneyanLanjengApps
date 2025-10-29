@@ -13,11 +13,36 @@ export default function Modules() {
   const [modules, setModules] = useState<Module[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [roles, setRoles] = useState<{[key: string]: number}>({})
+  const [rolesLoaded, setRolesLoaded] = useState(false)
   const user = getUser()
   
-  // Role IDs: 1=Admin, 2=Teacher, 3=Student
-  const isTeacher = user?.role === 2
-  const isStudent = user?.role === 3
+  // Fetch roles on component mount
+  useEffect(() => {
+    async function fetchRoles() {
+      try {
+        const response = await fetch('http://localhost:8000/api/roles/');
+        if (response.ok) {
+          const rolesData = await response.json();
+          const roleMap: {[key: string]: number} = {};
+          rolesData.forEach((role: any) => {
+            roleMap[role.name] = role.id;
+          });
+          setRoles(roleMap);
+        }
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+      } finally {
+        setRolesLoaded(true);
+      }
+    }
+    
+    fetchRoles();
+  }, []);
+  
+  // Role detection based on actual role IDs from backend
+  const isTeacher = rolesLoaded && roles.Teacher && user?.role === roles.Teacher;
+  const isStudent = rolesLoaded && roles.Student && user?.role === roles.Student;
 
   const urls = [
     {
@@ -26,8 +51,11 @@ export default function Modules() {
     },
   ]
 
-  // Fetch modules on component mount
+  // Fetch modules on component mount and when roles or user changes
   useEffect(() => {
+    // Don't fetch modules until roles are loaded
+    if (!rolesLoaded) return;
+    
     async function loadModules() {
       try {
         setIsLoading(true)
@@ -53,7 +81,7 @@ export default function Modules() {
     }
 
     loadModules()
-  }, [isTeacher, user?.id])
+  }, [isTeacher, isStudent, user?.id, rolesLoaded])
 
   // Format date helper
   const formatDate = (dateString: string) => {
@@ -111,6 +139,20 @@ export default function Modules() {
       return true
     }
   })
+
+  // Loading state while roles are being fetched
+  if (!rolesLoaded) {
+    return (
+      <RootLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <Icon icon="line-md:loading-loop" className="text-6xl text-black mx-auto mb-4" />
+            <p className="text-gray-600">Memuat peran...</p>
+          </div>
+        </div>
+      </RootLayout>
+    );
+  }
 
   return (
     <RootLayout>

@@ -93,8 +93,9 @@ The `/modules` route now serves both teachers and students with conditional rend
 ### Role Detection
 ```typescript
 const user = getUser()
-const isTeacher = user?.role === 2
-const isStudent = user?.role === 3
+// Role detection should be dynamic based on actual role IDs from backend
+// const isTeacher = user?.role === roles.Teacher
+// const isStudent = user?.role === roles.Student
 ```
 
 ### Data Filtering

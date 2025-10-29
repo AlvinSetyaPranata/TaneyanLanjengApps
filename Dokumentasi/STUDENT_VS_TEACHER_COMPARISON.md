@@ -393,20 +393,25 @@ Activity.objects.filter(student_id=user).order_by('-date_updated').first()
 
 ---
 
-## 🎓 Role Detection
+## 🎓 Role-Based Views
 
+### Role Detection
 ```typescript
-// In frontend
-const user = getUser(); // from localStorage
-const isTeacher = user?.role === 2; // Role ID 2
-const isStudent = user?.role === 3; // Role ID 3
+const user = getUser();
+// Role detection should be dynamic based on actual role IDs from backend
+// const isTeacher = user?.role === roles.Teacher; // Dynamic role ID
+// const isStudent = user?.role === roles.Student; // Dynamic role ID
+```
 
-// Conditional rendering
+### Conditional Rendering
+```typescript
+// Teacher sees creation tools
 if (isTeacher) {
-  return <TeacherDashboard />;
-} else {
-  return <StudentDashboard />;
+  return <TeacherModuleList />;
 }
+
+// Student sees progress tracking
+return <StudentModuleList />;
 ```
 
 ---

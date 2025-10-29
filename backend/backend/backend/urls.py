@@ -1,5 +1,3 @@
-
-
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from users.views import (
@@ -25,7 +23,7 @@ from activities.views import (
     student_stats
 )
 
-router = DefaultRouter(trailing_slash=False)
+router = DefaultRouter()
 
 router.register(r'roles', RoleView)
 router.register(r'users', UserView)
@@ -42,12 +40,12 @@ urlpatterns = [
     path('api/modules/<int:module_id>/lessons/<int:lesson_id>', lesson_detail, name='lesson-detail'),
     path('api/teacher/stats', teacher_stats, name='teacher-stats'),
     path('api/student/stats', student_stats, name='student-stats'),
-    path('api/login', LoginView.as_view(), name='login'),
-    path('api/register', RegisterView.as_view(), name='register'),
+    path('api/login/', LoginView.as_view(), name='login'),
+    path('api/register/', RegisterView.as_view(), name='register'),
     # User profile endpoints
-    path('api/user/profile', get_user_profile, name='user-profile'),
-    path('api/user/profile/update', update_user_profile, name='update-user-profile'),
-    path('api/user/password/change', change_password, name='change-password'),
+    path('api/user/profile/', get_user_profile, name='user-profile'),
+    path('api/user/profile/update/', update_user_profile, name='update-user-profile'),
+    path('api/user/password/change/', change_password, name='change-password'),
     # Router URLs (will match /api/modules, /api/modules/<id>, etc.)
     path('api/', include(router.urls)),
 ]
