@@ -5,6 +5,7 @@ import RootLayout from '../../layouts/RootLayout'
 import Button from '../../components/atoms/Button'
 import Input from '../../components/atoms/Input'
 import { getUser } from '../../utils/auth'
+import ImageUploadModal from '../../components/ImageUploadModal'
 
 interface ModuleFormData {
   title: string
@@ -27,6 +28,18 @@ export default function ModuleEditor() {
     cover_image: '',
     is_published: false
   })
+  const [localImage, setLocalImage] = useState<File | null>(null)
+  const [localImageBlobUrl, setLocalImageBlobUrl] = useState<string | null>(null)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
+
+  // Clean up blob URLs
+  useEffect(() => {
+    return () => {
+      if (localImageBlobUrl) {
+        URL.revokeObjectURL(localImageBlobUrl)
+      }
+    }
+  }, [localImageBlobUrl])
 
   // Fetch module data if editing
   useEffect(() => {
@@ -34,16 +47,16 @@ export default function ModuleEditor() {
       const fetchModule = async () => {
         try {
           const token = localStorage.getItem('access_token')
-          const response = await fetch(`http://localhost:8000/api/modules/${module_id}/`, {
+          const response = await fetch(`http://localhost:8004/api/modules/${module_id}/`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
           })
           if (response.ok) {
             const data = await response.json()
-            // Convert deadline to datetime-local format
+            // Convert deadline to date format
             const deadlineDate = new Date(data.deadline)
-            const formattedDeadline = deadlineDate.toISOString().slice(0, 16)
+            const formattedDeadline = deadlineDate.toISOString().split('T')[0]
             
             setFormData({
               title: data.title,
@@ -80,15 +93,15 @@ export default function ModuleEditor() {
       const payload = {
         title: formData.title,
         description: formData.description,
-        deadline: new Date(formData.deadline).toISOString(),
+        deadline: formData.deadline ? new Date(formData.deadline + 'T23:59:59').toISOString() : new Date().toISOString(),
         cover_image: formData.cover_image || null,
         is_published: formData.is_published,
         ...(module_id ? {} : { author: user?.id })
       }
       
       const url = module_id 
-        ? `http://localhost:8000/api/modules/${module_id}/`
-        : 'http://localhost:8000/api/modules/'
+        ? `http://localhost:8004/api/modules/${module_id}/`
+        : 'http://localhost:8004/api/modules/'
       
       const method = module_id ? 'PUT' : 'POST'
       
@@ -104,15 +117,21 @@ export default function ModuleEditor() {
       if (response.ok) {
         const data = await response.json()
         alert('Module saved successfully!')
-        navigate(`/teacher/modules/${data.id}`)
+        // For existing modules, we already have the module_id
+        if (module_id) {
+          navigate(`/teacher/modules/${module_id}`)
+        } else {
+          // For new modules, redirect to the newly created module detail page
+          navigate(`/teacher/modules/${data.id}`)
+        }
       } else {
         const error = await response.json()
         
         // Check if error is about exam requirement
         if (error.exam_required) {
-          const moduleId = module_id || error.id
+          // Use module_id from URL params for existing modules
           if (confirm(`${error.error}\n\nApakah Anda ingin membuat ujian sekarang?`)) {
-            navigate(`/teacher/modules/${moduleId}/lessons/create`)
+            navigate(`/teacher/modules/${module_id}/lessons/create`)
           }
         } else {
           alert(`Error saving module: ${error.error || JSON.stringify(error)}`)
@@ -188,7 +207,7 @@ export default function ModuleEditor() {
                 Batas Waktu *
               </label>
               <Input
-                type="datetime-local"
+                type="date"
                 value={formData.deadline}
                 onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
                 required
@@ -198,19 +217,28 @@ export default function ModuleEditor() {
               </p>
             </div>
 
-            {/* Cover Image URL */}
+            {/* Cover Image */}
             <div>
               <label className="block text-sm font-semibold mb-2">
-                URL Gambar Sampul
+                Gambar Sampul
               </label>
-              <Input
-                type="url"
-                placeholder="https://example.com/image.jpg"
-                value={formData.cover_image}
-                onChange={(e) => setFormData(prev => ({ ...prev, cover_image: e.target.value }))}
-              />
+              
+              <div className="mb-4">
+                <Button 
+                  variant="secondary" 
+                  onClick={() => setIsImageModalOpen(true)}
+                  className="w-full justify-center"
+                >
+                  <Icon icon="tabler:photo" className="text-xl mr-2" />
+                  Pilih Gambar
+                </Button>
+                <p className="text-sm text-gray-500 mt-1">
+                  Pilih gambar dari komputer Anda atau gunakan URL gambar
+                </p>
+              </div>
+              
               <p className="text-sm text-gray-500 mt-1">
-                Opsional: Tambahkan URL gambar sampul untuk modul Anda
+                Opsional: Tambahkan gambar sampul untuk modul Anda
               </p>
               
               {/* Image Preview */}
@@ -226,6 +254,9 @@ export default function ModuleEditor() {
                       e.currentTarget.classList.add('hidden')
                     }}
                   />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Gambar akan disimpan sebagai URL permanen di database
+                  </p>
                 </div>
               )}
             </div>
@@ -316,6 +347,20 @@ export default function ModuleEditor() {
           </ul>
         </div>
       </div>
+      
+      <ImageUploadModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        onImageSelected={(url) => {
+          setFormData(prev => ({ ...prev, cover_image: url }))
+          // Clean up any existing blob URLs
+          if (localImageBlobUrl) {
+            URL.revokeObjectURL(localImageBlobUrl)
+            setLocalImageBlobUrl(null)
+          }
+          setLocalImage(null)
+        }}
+      />
     </RootLayout>
   )
 }

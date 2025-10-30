@@ -5,9 +5,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getLessonDetail } from '../../services/moduleService';
+import { submitExamAnswers } from '../../services/examService';
 import type { LessonDetailResponse } from '../../types/modules';
+import { parseExamContent, type ExamQuestion } from '../../utils/examParser';
 
-export default function ExamPage() {
+export default function StudentExamPage() {
   const { module_id, lesson_id } = useParams<{ module_id: string; lesson_id: string }>();
   const navigate = useNavigate();
   
@@ -21,6 +23,10 @@ export default function ExamPage() {
   const [hasStarted, setHasStarted] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const timerRef = useRef<number | null>(null);
+  
+  // Exam states
+  const [questions, setQuestions] = useState<ExamQuestion[]>([]);
+  const [answers, setAnswers] = useState<{[key: number]: string}>({});
   
   // Warning modal states
   const [showExitWarning, setShowExitWarning] = useState(false);
@@ -49,6 +55,10 @@ export default function ExamPage() {
         
         setLessonData(data);
         setTimeRemaining(data.lesson.duration_minutes * 60); // Convert to seconds
+        
+        // Parse exam content into questions
+        const parsedQuestions = parseExamContent(data.lesson.content);
+        setQuestions(parsedQuestions);
       } catch (err) {
         console.error('Error fetching lesson:', err);
         setError(err instanceof Error ? err.message : 'Failed to load exam');
@@ -59,6 +69,8 @@ export default function ExamPage() {
 
     fetchLesson();
   }, [module_id, lesson_id]);
+
+
 
   // Timer effect
   useEffect(() => {
@@ -102,7 +114,7 @@ export default function ExamPage() {
     const percentage = (timeRemaining / (lessonData?.lesson.duration_minutes || 1) / 60) * 100;
     if (percentage > 50) return 'text-gray-700';
     if (percentage > 20) return 'text-gray-800';
-    return 'text-black';
+    return 'text-red-600';
   };
 
   // Start exam
@@ -111,19 +123,35 @@ export default function ExamPage() {
     setIsTimerRunning(true);
   };
 
-  // Time up handler
+  // Time up handler - auto submit
   const handleTimeUp = () => {
     setIsTimerRunning(false);
-    // Auto-submit
     handleSubmit();
   };
 
+  // Handle answer change
+  const handleAnswerChange = (questionId: number, answer: string) => {
+    setAnswers(prev => ({
+      ...prev,
+      [questionId]: answer
+    }));
+  };
+
   // Submit exam
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsTimerRunning(false);
     setIsSubmitted(true);
     if (timerRef.current) {
       clearInterval(timerRef.current);
+    }
+    
+    try {
+      // Submit answers to backend
+      await submitExamAnswers(parseInt(lesson_id!), answers);
+      console.log('Exam answers submitted successfully');
+    } catch (error) {
+      console.error('Error submitting exam answers:', error);
+      // In a real implementation, you might want to show an error message to the user
     }
   };
 
@@ -200,6 +228,10 @@ export default function ExamPage() {
                   <li className="flex items-start gap-2">
                     <Icon icon="mdi:lock" className="text-gray-600 mt-1 flex-shrink-0" />
                     <span>Jangan keluar dari halaman saat ujian berlangsung</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon icon="mdi:format-list-bulleted" className="text-gray-600 mt-1 flex-shrink-0" />
+                    <span>Ujian ini terdiri dari {questions.length} soal</span>
                   </li>
                 </ul>
               </div>
@@ -302,29 +334,81 @@ export default function ExamPage() {
             </div>
           </div>
         </div>
-        
-        {/* Instructor Note */}
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <Icon icon="mdi:information" className="text-blue-500 text-xl mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-blue-800 mb-1">Instructor View</h3>
-                <p className="text-blue-700 text-sm">
-                  This is the instructor/admin view of the exam. Students will see a different interface with interactive questions and automatic time management.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Exam Content */}
         <div className="max-w-4xl mx-auto px-6 py-8">
-          <article className="bg-white rounded-lg shadow-sm p-8 markdown-content prose prose-lg max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {lesson.content}
-            </ReactMarkdown>
-          </article>
+          <div className="bg-white rounded-lg shadow-sm p-8">
+            <div className="space-y-8">
+              {questions.map((question, index) => (
+                <div key={question.id} className="border-b border-gray-200 pb-8 last:border-b-0">
+                  <div className="flex items-start mb-4">
+                    <span className="font-semibold mr-2">Soal {index + 1}:</span>
+                    <span className="flex-1">{question.question}</span>
+                    <span className="text-sm text-gray-500 ml-2">({question.points} poin)</span>
+                  </div>
+                  
+                  {question.type === 'multiple-choice' && question.options && (
+                    <div className="space-y-2 ml-4">
+                      {question.options.map((option, optionIndex) => (
+                        <div key={optionIndex} className="flex items-center">
+                          <input
+                            type="radio"
+                            id={`question-${question.id}-option-${optionIndex}`}
+                            name={`question-${question.id}`}
+                            value={option}
+                            checked={answers[question.id] === option}
+                            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                            className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+                          />
+                          <label 
+                            htmlFor={`question-${question.id}-option-${optionIndex}`} 
+                            className="ml-3 block text-sm font-medium text-gray-700"
+                          >
+                            {String.fromCharCode(65 + optionIndex)}. {option}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {question.type === 'short-answer' && (
+                    <div className="ml-4">
+                      <textarea
+                        id={`question-${question.id}`}
+                        rows={4}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm"
+                        placeholder="Tulis jawaban Anda di sini..."
+                        value={answers[question.id] || ''}
+                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                      />
+                    </div>
+                  )}
+                  
+                  {question.type === 'coding' && (
+                    <div className="ml-4">
+                      <textarea
+                        id={`question-${question.id}`}
+                        rows={8}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm font-mono"
+                        placeholder="Tulis kode Anda di sini..."
+                        value={answers[question.id] || ''}
+                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={() => setShowSubmitConfirm(true)}
+                className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-semibold"
+              >
+                Submit Ujian
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Warning Modals */}

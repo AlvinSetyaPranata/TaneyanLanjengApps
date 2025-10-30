@@ -30,7 +30,7 @@ export default function LessonPage() {
         setError(null);
         const data = await getLessonDetail(parseInt(module_id), parseInt(lesson_id));
         
-        // If this is an exam, redirect to exam page
+        // If this is an exam, redirect to student exam page
         if (data.lesson.lesson_type === 'exam') {
           navigate(`/student/modules/${module_id}/exam/${lesson_id}`);
           return;

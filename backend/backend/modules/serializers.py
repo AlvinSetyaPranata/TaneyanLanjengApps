@@ -47,7 +47,7 @@ class ModuleCreateUpdateSerializer(ModelSerializer):
     """Serializer for creating and updating modules"""
     class Meta:
         model = Module
-        fields = ["title", "description", "deadline", "cover_image", "is_published", "author"]
+        fields = ["id", "title", "description", "deadline", "cover_image", "is_published", "author"]
 
 
 class ModuleWithLessonsSerializer(ModelSerializer):

@@ -59,7 +59,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchRoles() {
       try {
-        const response = await fetch('http://localhost:8000/api/roles/');
+        const response = await fetch('http://localhost:8004/api/roles/');
         if (response.ok) {
           const rolesData = await response.json();
           const roleMap: {[key: string]: number} = {};
@@ -98,6 +98,13 @@ export default function Home() {
     },
   ];
 
+  // Navigate to admin dashboard if user is admin
+  useEffect(() => {
+    if (isAdmin) {
+      navigate('/admin/dashboard');
+    }
+  }, [isAdmin, navigate]);
+
   // Fetch stats based on user role
   useEffect(() => {
     // Don't fetch stats until roles are loaded
@@ -114,7 +121,7 @@ export default function Home() {
         setIsLoading(true);
         const token = localStorage.getItem('access_token');
         const endpoint = isTeacher ? 'teacher/stats' : 'student/stats';
-        const response = await fetch(`http://localhost:8000/api/${endpoint}`, {
+        const response = await fetch(`http://localhost:8004/api/${endpoint}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -166,17 +173,15 @@ export default function Home() {
     );
   }
 
-  // Admin view (simple welcome page)
+  // Admin view - redirect to admin dashboard
   if (isAdmin) {
     return (
       <RootLayout>
-        <Headline news={data} />
-        <div className="mt-12 text-center py-12">
-          <Icon icon="mdi:shield-account" className="text-6xl text-black mx-auto mb-4" />
-          <h1 className="text-3xl font-bold mb-4">Selamat Datang, Administrator</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Anda login sebagai administrator. Gunakan panel admin Django untuk mengelola sistem.
-          </p>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <Icon icon="line-md:loading-loop" className="text-6xl text-black mx-auto mb-4" />
+            <p className="text-gray-600">Mengarahkan ke dashboard admin...</p>
+          </div>
         </div>
       </RootLayout>
     );

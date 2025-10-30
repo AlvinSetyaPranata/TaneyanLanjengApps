@@ -1,4 +1,6 @@
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from users.views import (
     RoleView,
@@ -20,7 +22,23 @@ from modules.views import (
 from activities.views import (
     UserOverviewView,
     ActivityView,
-    student_stats
+    student_stats,
+    submit_exam_answers
+)
+from modules.views_upload import upload_image
+from users.views_admin import (
+    admin_dashboard_stats,
+    get_all_users,
+    create_user,
+    update_user,
+    delete_user,
+    change_user_password,
+    get_all_modules,
+    delete_module,
+    get_headlines,
+    create_headline,
+    update_headline,
+    delete_headline
 )
 
 router = DefaultRouter()
@@ -46,6 +64,27 @@ urlpatterns = [
     path('api/user/profile/', get_user_profile, name='user-profile'),
     path('api/user/profile/update/', update_user_profile, name='update-user-profile'),
     path('api/user/password/change/', change_password, name='change-password'),
+    # Exam endpoints
+    path('api/exam/<int:lesson_id>/submit', submit_exam_answers, name='submit-exam-answers'),
+    # File upload endpoint
+    path('api/upload/image', upload_image, name='upload-image'),
+        # Admin endpoints
+    path('api/admin/stats', admin_dashboard_stats, name='admin-stats'),
+    path('api/admin/users', get_all_users, name='admin-get-all-users'),
+    path('api/admin/users/create', create_user, name='admin-create-user'),
+    path('api/admin/users/<int:user_id>/update', update_user, name='admin-update-user'),
+    path('api/admin/users/<int:user_id>/delete', delete_user, name='admin-delete-user'),
+    path('api/admin/users/<int:user_id>/change-password', change_user_password, name='admin-change-user-password'),
+    path('api/admin/modules', get_all_modules, name='admin-get-all-modules'),
+    path('api/admin/modules/<int:module_id>/delete', delete_module, name='admin-delete-module'),
+    path('api/admin/headlines', get_headlines, name='admin-get-headlines'),
+    path('api/admin/headlines/create', create_headline, name='admin-create-headline'),
+    path('api/admin/headlines/<int:headline_id>/update', update_headline, name='admin-update-headline'),
+    path('api/admin/headlines/<int:headline_id>/delete', delete_headline, name='admin-delete-headline'),
     # Router URLs (will match /api/modules, /api/modules/<id>, etc.)
     path('api/', include(router.urls)),
 ]
+
+# Serve media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

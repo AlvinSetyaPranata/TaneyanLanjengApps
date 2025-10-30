@@ -103,3 +103,43 @@ def student_stats(request):
             'monthly_activity': monthly_activity
         }
     }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def submit_exam_answers(request, lesson_id):
+    """
+    Submit exam answers from a student.
+    """
+    try:
+        # Get the lesson (exam)
+        from modules.models import Lesson
+        lesson = Lesson.objects.get(id=lesson_id, lesson_type='exam')
+        
+        # In a real implementation, you would:
+        # 1. Validate the answers
+        # 2. Store them in a database
+        # 3. Calculate score
+        # 4. Return results
+        
+        # For now, we'll just acknowledge the submission
+        answers = request.data.get('answers', {})
+        
+        # Log the submission (in a real app, you'd save to database)
+        print(f"User {request.user.username} submitted answers for exam {lesson.title}: {answers}")
+        
+        return Response({
+            'success': True,
+            'message': 'Exam answers submitted successfully'
+        }, status=status.HTTP_200_OK)
+        
+    except Lesson.DoesNotExist:
+        return Response({
+            'success': False,
+            'error': 'Exam not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)

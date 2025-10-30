@@ -9,7 +9,7 @@ interface Module {
   title: string
   description: string
   deadline: string
-  author_id: number
+  author: number
   author_name: string
   cover_image: string | null
   is_published: boolean
@@ -35,7 +35,7 @@ export default function TeacherModules() {
         const token = localStorage.getItem('access_token')
         
         // Use modules overview endpoint which includes lessons_count
-        const response = await fetch('http://localhost:8000/api/modules/overview', {
+        const response = await fetch('http://localhost:8004/api/modules/overview', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -48,7 +48,7 @@ export default function TeacherModules() {
           const teacherModules = allModules.map((m: any) => ({
             ...m,
             lessons_count: m.lessons ? m.lessons.length : 0
-          })).filter((m: Module) => m.author_id === user?.id)
+          })).filter((m: Module) => m.author === user?.id)
           setModules(teacherModules)
         } else {
           setError('Failed to load modules')
@@ -82,7 +82,7 @@ export default function TeacherModules() {
 
     try {
       const token = localStorage.getItem('access_token')
-      const response = await fetch(`http://localhost:8000/api/modules/${moduleId}/`, {
+      const response = await fetch(`http://localhost:8004/api/modules/${moduleId}/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

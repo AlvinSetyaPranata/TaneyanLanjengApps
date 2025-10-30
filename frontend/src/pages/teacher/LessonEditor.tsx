@@ -9,6 +9,7 @@ import RootLayout from '../../layouts/RootLayout'
 import Button from '../../components/atoms/Button'
 import Input from '../../components/atoms/Input'
 import Select from '../../components/atoms/Select'
+import ImageUploadModal from '../../components/ImageUploadModal'
 
 
 interface LessonFormData {
@@ -36,9 +37,11 @@ export default function LessonEditor() {
   const [isSaving, setIsSaving] = useState(false)
   const [modules, setModules] = useState<ModuleWithExamInfo[]>([])
   const [currentModule, setCurrentModule] = useState<ModuleWithExamInfo | null>(null)
+  const [blobUrls, setBlobUrls] = useState<string[]>([])
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [formData, setFormData] = useState<LessonFormData>({
     title: '',
-    content: '# Write your lesson content here\n\nStart typing...',
+    content: '# Tulis konten pelajaran Anda di sini\n\nMulai mengetik...',
     lesson_type: 'lesson',
     order: 1,
     duration_minutes: 30,
@@ -51,7 +54,7 @@ export default function LessonEditor() {
     const fetchModules = async () => {
       try {
         const token = localStorage.getItem('access_token')
-        const response = await fetch('http://localhost:8000/api/modules/', {
+        const response = await fetch('http://localhost:8004/api/modules/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -83,13 +86,20 @@ export default function LessonEditor() {
     fetchModules()
   }, [module_id, lesson_id])
 
+  // Clean up blob URLs
+  useEffect(() => {
+    return () => {
+      blobUrls.forEach(url => URL.revokeObjectURL(url))
+    }
+  }, [blobUrls])
+
   // Fetch lesson data if editing
   useEffect(() => {
     if (lesson_id) {
       const fetchLesson = async () => {
         try {
           const token = localStorage.getItem('access_token')
-          const response = await fetch(`http://localhost:8000/api/lessons/${lesson_id}/`, {
+          const response = await fetch(`http://localhost:8004/api/lessons/${lesson_id}/`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -119,8 +129,8 @@ export default function LessonEditor() {
     try {
       const token = localStorage.getItem('access_token')
       const url = lesson_id 
-        ? `http://localhost:8000/api/lessons/${lesson_id}/`
-        : 'http://localhost:8000/api/lessons/'
+        ? `http://localhost:8004/api/lessons/${lesson_id}/`
+        : 'http://localhost:8004/api/lessons/'
       
       const method = lesson_id ? 'PUT' : 'POST'
       
@@ -155,14 +165,7 @@ export default function LessonEditor() {
   }
 
   const insertImage = () => {
-    const url = prompt('Enter image URL:')
-    if (url) {
-      const imageMarkdown = `\n![Image description](${url})\n`
-      setFormData(prev => ({
-        ...prev,
-        content: prev.content + imageMarkdown
-      }))
-    }
+    setIsImageModalOpen(true)
   }
 
   const insertTable = () => {
@@ -225,10 +228,10 @@ console.log('Hello, World!')
         {/* Header */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold">
-            {lesson_id ? 'Edit Lesson' : 'Create New Lesson'}
+            {lesson_id ? 'Edit Materi' : 'Buat Materi Baru'}
           </h2>
           <p className="text-gray-600 mt-2">
-            {formData.lesson_type === 'exam' ? 'Create an exam for students' : 'Create engaging lesson content with markdown'}
+            {formData.lesson_type === 'exam' ? 'Buat ujian untuk siswa' : 'Buat konten pelajaran yang menarik dengan markdown'}
           </p>
         </div>
 
@@ -237,7 +240,7 @@ console.log('Hello, World!')
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {/* Title */}
             <div>
-              <label className="block text-sm font-semibold mb-2">Lesson Title *</label>
+              <label className="block text-sm font-semibold mb-2">Judul Materi *</label>
               <Input
                 type="text"
                 placeholder="Enter lesson title"
@@ -249,7 +252,7 @@ console.log('Hello, World!')
 
             {/* Module Selection */}
             <div>
-              <label className="block text-sm font-semibold mb-2">Module *</label>
+              <label className="block text-sm font-semibold mb-2">Modul *</label>
               <Select
                 value={formData.module_id.toString()}
                 onChange={(e) => {
@@ -272,7 +275,7 @@ console.log('Hello, World!')
                   }
                 }}
                 options={[
-                  { value: 0, label: 'Select a module' },
+                  { value: 0, label: 'Pilih modul' },
                   ...modules.map(module => ({ value: module.id, label: module.title }))
                 ]}
                 required
@@ -281,20 +284,20 @@ console.log('Hello, World!')
 
             {/* Lesson Type */}
             <div>
-              <label className="block text-sm font-semibold mb-2">Type *</label>
+              <label className="block text-sm font-semibold mb-2">Tipe *</label>
               <Select
                 value={formData.lesson_type}
                 onChange={(e) => setFormData(prev => ({ ...prev, lesson_type: e.target.value as 'lesson' | 'exam' }))}
                 options={[
-                  { value: 'lesson', label: 'Lesson' },
-                  { value: 'exam', label: 'Final Exam' }
+                  { value: 'lesson', label: 'Materi' },
+                  { value: 'exam', label: 'Ujian Akhir' }
                 ]}
               />
             </div>
 
             {/* Order */}
             <div>
-              <label className="block text-sm font-semibold mb-2">Order *</label>
+              <label className="block text-sm font-semibold mb-2">Urutan *</label>
               <Input
                 type="number"
                 min="1"
@@ -306,7 +309,7 @@ console.log('Hello, World!')
 
             {/* Duration */}
             <div>
-              <label className="block text-sm font-semibold mb-2">Duration (minutes) *</label>
+              <label className="block text-sm font-semibold mb-2">Durasi (menit) *</label>
               <Input
                 type="number"
                 min="1"
@@ -326,7 +329,7 @@ console.log('Hello, World!')
                 className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               <label htmlFor="is_published" className="text-sm font-semibold">
-                Publish immediately
+                Publikasikan segera
               </label>
             </div>
           </div>
@@ -339,18 +342,18 @@ console.log('Hello, World!')
               <button
                 onClick={insertImage}
                 className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-                title="Insert Image"
+                title="Sisipkan Gambar"
               >
                 <Icon icon="tabler:photo" className="text-xl" />
-                <span className="text-sm font-medium">Image</span>
+                <span className="text-sm font-medium">Gambar</span>
               </button>
               <button
                 onClick={insertTable}
                 className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-                title="Insert Table"
+                title="Sisipkan Tabel"
               >
                 <Icon icon="tabler:table" className="text-xl" />
-                <span className="text-sm font-medium">Table</span>
+                <span className="text-sm font-medium">Tabel</span>
               </button>
               <button
                 onClick={insertCodeBlock}
@@ -450,14 +453,38 @@ console.log('Hello, World!')
               <p><strong>*teks miring*</strong> - Teks miring</p>
             </div>
             <div>
-              <p><strong>[link](url)</strong> - Hyperlink</p>
+              <p><strong>[link](url)</strong> - Tautan</p>
               <p><strong>![alt](url)</strong> - Gambar</p>
-              <p><strong>- item</strong> - Daftar bullet</p>
+              <p><strong>- item</strong> - Daftar poin</p>
               <p><strong>1. item</strong> - Daftar bernomor</p>
             </div>
           </div>
+          
+          <div className="mt-4 pt-4 border-t border-gray-300">
+            <h4 className="font-semibold text-gray-900 mb-2">Tips Gambar</h4>
+            <p className="text-sm text-gray-700 mb-2">
+              Gambar lokal akan dikonversi ke blob URL untuk pratinjau langsung. 
+              Untuk gambar permanen, unggah ke layanan hosting gambar (seperti Imgur, Cloudinary) dan gunakan URL-nya.
+            </p>
+            <p className="text-xs text-gray-500">
+              Catatan: Blob URL lebih efisien daripada data URL. Untuk konten yang lebih ringan, gunakan URL gambar eksternal.
+            </p>
+          </div>
         </div>
       </div>
+      
+      <ImageUploadModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        onImageSelected={(url) => {
+          const filename = url.substring(url.lastIndexOf('/') + 1)
+          const imageMarkdown = `\n![${filename}](${url})\n`
+          setFormData(prev => ({
+            ...prev,
+            content: prev.content + imageMarkdown
+          }))
+        }}
+      />
     </RootLayout>
   )
 }

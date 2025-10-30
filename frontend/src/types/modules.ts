@@ -18,7 +18,7 @@ export interface Module {
   title: string;
   description?: string;
   deadline: string;
-  author_id: number;
+  author: number;
   author_name?: string;
   cover_image?: string;
   is_published: boolean;

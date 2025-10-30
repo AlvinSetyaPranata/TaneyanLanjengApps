@@ -5,7 +5,7 @@ import type {
   LessonDetailResponse 
 } from '../types/modules';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://localhost:8004/api';
 
 /**
  * Fetch all modules with their lessons

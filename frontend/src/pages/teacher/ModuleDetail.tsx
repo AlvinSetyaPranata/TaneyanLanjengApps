@@ -21,7 +21,7 @@ interface ModuleDetail {
   title: string
   description: string
   deadline: string
-  author_id: number
+  author: number
   author_name: string
   cover_image: string | null
   is_published: boolean
@@ -47,7 +47,7 @@ export default function TeacherModuleDetail() {
         setError(null)
         const token = localStorage.getItem('access_token')
         
-        const response = await fetch(`http://localhost:8000/api/modules/${module_id}/detail`, {
+        const response = await fetch(`http://localhost:8004/api/modules/${module_id}/detail`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -78,7 +78,7 @@ export default function TeacherModuleDetail() {
 
     try {
       const token = localStorage.getItem('access_token')
-      const response = await fetch(`http://localhost:8000/api/lessons/${lessonId}/`, {
+      const response = await fetch(`http://localhost:8004/api/lessons/${lessonId}/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
