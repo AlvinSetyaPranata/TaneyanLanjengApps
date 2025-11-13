@@ -54,7 +54,7 @@ export default function LessonEditor() {
     const fetchModules = async () => {
       try {
         const token = localStorage.getItem('access_token')
-        const response = await fetch('http://localhost:8004/api/modules/', {
+        const response = await fetch('http://localhost:8000/api/modules/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -86,20 +86,13 @@ export default function LessonEditor() {
     fetchModules()
   }, [module_id, lesson_id])
 
-  // Clean up blob URLs
-  useEffect(() => {
-    return () => {
-      blobUrls.forEach(url => URL.revokeObjectURL(url))
-    }
-  }, [blobUrls])
-
   // Fetch lesson data if editing
   useEffect(() => {
     if (lesson_id) {
       const fetchLesson = async () => {
         try {
           const token = localStorage.getItem('access_token')
-          const response = await fetch(`http://localhost:8004/api/lessons/${lesson_id}/`, {
+          const response = await fetch(`http://localhost:8000/api/lessons/${lesson_id}/`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -129,8 +122,8 @@ export default function LessonEditor() {
     try {
       const token = localStorage.getItem('access_token')
       const url = lesson_id 
-        ? `http://localhost:8004/api/lessons/${lesson_id}/`
-        : 'http://localhost:8004/api/lessons/'
+        ? `http://localhost:8000/api/lessons/${lesson_id}/`
+        : 'http://localhost:8000/api/lessons/'
       
       const method = lesson_id ? 'PUT' : 'POST'
       
@@ -144,22 +137,22 @@ export default function LessonEditor() {
       })
 
       if (response.ok) {
-        alert('Lesson saved successfully!')
+        alert('Materi berhasil disimpan!')
         navigate(`/teacher/modules/${formData.module_id}`)
       } else {
         const error = await response.json()
-        alert(`Error saving lesson: ${JSON.stringify(error)}`)
+        alert(`Error menyimpan materi: ${JSON.stringify(error)}`)
       }
     } catch (error) {
       console.error('Error saving lesson:', error)
-      alert('Failed to save lesson')
+      alert('Gagal menyimpan materi')
     } finally {
       setIsSaving(false)
     }
   }
 
   const handleCancel = () => {
-    if (confirm('Are you sure you want to cancel? Unsaved changes will be lost.')) {
+    if (confirm('Apakah Anda yakin ingin membatalkan? Perubahan yang belum disimpan akan hilang.')) {
       navigate(-1)
     }
   }
@@ -169,10 +162,10 @@ export default function LessonEditor() {
   }
 
   const insertTable = () => {
-    const tableMarkdown = `\n| Column 1 | Column 2 | Column 3 |
+    const tableMarkdown = `\n| Kolom 1 | Kolom 2 | Kolom 3 |
 |----------|----------|----------|
-| Cell 1   | Cell 2   | Cell 3   |
-| Cell 4   | Cell 5   | Cell 6   |\n`
+| Sel 1   | Sel 2   | Sel 3   |
+| Sel 4   | Sel 5   | Sel 6   |\n`
     setFormData(prev => ({
       ...prev,
       content: prev.content + tableMarkdown
@@ -181,8 +174,8 @@ export default function LessonEditor() {
 
   const insertCodeBlock = () => {
     const codeMarkdown = `\n\`\`\`javascript
-// Your code here
-console.log('Hello, World!')
+// Kode Anda di sini
+console.log('Halo, Dunia!')
 \`\`\`\n`
     setFormData(prev => ({
       ...prev,
@@ -477,12 +470,14 @@ console.log('Hello, World!')
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}
         onImageSelected={(url) => {
-          const filename = url.substring(url.lastIndexOf('/') + 1)
-          const imageMarkdown = `\n![${filename}](${url})\n`
-          setFormData(prev => ({
-            ...prev,
-            content: prev.content + imageMarkdown
-          }))
+          if (url) {
+            const filename = url.substring(url.lastIndexOf('/') + 1)
+            const imageMarkdown = `\n![${filename}](${url})\n`
+            setFormData(prev => ({
+              ...prev,
+              content: prev.content + imageMarkdown
+            }))
+          }
         }}
       />
     </RootLayout>

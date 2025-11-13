@@ -2,6 +2,10 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 from users.views import (
     RoleView,
     UserView,
@@ -52,6 +56,9 @@ router.register(r'overviews', UserOverviewView)
 
 
 urlpatterns = [
+    # JWT Token endpoints
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # Specific module endpoints must come BEFORE router.urls to avoid conflicts
     path('api/modules/overview', modules_overview, name='modules-overview'),
     path('api/modules/<int:module_id>/detail', module_detail_with_lessons, name='module-detail-with-lessons'),

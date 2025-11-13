@@ -54,6 +54,44 @@ export const setAuthData = (accessToken: string, refreshToken: string, user: Use
   localStorage.setItem('user', JSON.stringify(user));
 };
 
+// Refresh access token using refresh token
+export const refreshAccessToken = async (): Promise<string | null> => {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) return null;
+
+  try {
+    const response = await fetch('http://localhost:8000/api/token/refresh/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ refresh: refreshToken }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      // The JWT library might return 'access' instead of 'access_token'
+      const accessToken = data.access || data.access_token;
+      if (accessToken) {
+        localStorage.setItem('access_token', accessToken);
+        return accessToken;
+      }
+    } else {
+      // If refresh token is invalid or expired, clear all auth data
+      logout();
+      return null;
+    }
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    // If there's an error, clear all auth data
+    logout();
+    return null;
+  }
+
+  return null;
+};
+
 // Create fetch with JWT authentication
 export const authFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
   const token = getAccessToken();
@@ -64,7 +102,7 @@ export const authFetch = async (url: string, options: RequestInit = {}): Promise
     ...options.headers,
   };
 
-  const response = await fetch(url, {
+  let response = await fetch(url, {
     ...options,
     headers,
     credentials: 'include',
@@ -72,9 +110,30 @@ export const authFetch = async (url: string, options: RequestInit = {}): Promise
 
   // If token is expired, try to refresh
   if (response.status === 401) {
-    // TODO: Implement token refresh logic
-    logout();
-    window.location.href = '/login';
+    const newToken = await refreshAccessToken();
+    if (newToken) {
+      // Retry the request with the new token
+      const retryHeaders = {
+        ...headers,
+        'Authorization': `Bearer ${newToken}`,
+      };
+      
+      response = await fetch(url, {
+        ...options,
+        headers: retryHeaders,
+        credentials: 'include',
+      });
+      
+      // If retry still fails, logout and redirect
+      if (response.status === 401) {
+        logout();
+        window.location.href = '/login';
+      }
+    } else {
+      // If refresh failed, logout and redirect
+      logout();
+      window.location.href = '/login';
+    }
   }
 
   return response;

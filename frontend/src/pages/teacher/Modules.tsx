@@ -35,7 +35,7 @@ export default function TeacherModules() {
         const token = localStorage.getItem('access_token')
         
         // Use modules overview endpoint which includes lessons_count
-        const response = await fetch('http://localhost:8004/api/modules/overview', {
+        const response = await fetch('http://localhost:8000/api/modules/overview', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -82,7 +82,7 @@ export default function TeacherModules() {
 
     try {
       const token = localStorage.getItem('access_token')
-      const response = await fetch(`http://localhost:8004/api/modules/${moduleId}/`, {
+      const response = await fetch(`http://localhost:8000/api/modules/${moduleId}/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

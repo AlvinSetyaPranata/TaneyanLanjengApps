@@ -1,18 +1,20 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
 from django.core.exceptions import ValidationError
-from datetime import datetime, timedelta
+from django.utils import timezone
+from datetime import timedelta
 from .models import (
     Module,
     Lesson
 )
 from .serializers import (
     LessonSerializer,
+    LessonCreateUpdateSerializer,
     ModuleSerializer,
     ModuleWithLessonsSerializer,
     ModuleWithProgressSerializer,
@@ -71,10 +73,15 @@ class LessonView(ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return LessonCreateUpdateSerializer
+        return LessonSerializer
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def modules_overview(request):
     """
     Get all modules with their lessons nested inside and user progress.
@@ -211,7 +218,7 @@ def teacher_stats(request):
         }
     
     # Get monthly activity for last 6 months
-    six_months_ago = datetime.now() - timedelta(days=180)
+    six_months_ago = timezone.now() - timedelta(days=180)
     monthly_modules = teacher_modules.filter(
         date_created__gte=six_months_ago
     ).annotate(

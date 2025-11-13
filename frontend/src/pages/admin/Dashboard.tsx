@@ -84,28 +84,28 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       // Fetch admin stats
-      const statsResponse = await authFetch('http://localhost:8004/api/admin/stats')
+      const statsResponse = await authFetch('http://localhost:8000/api/admin/stats')
       if (statsResponse.ok) {
         const statsData = await statsResponse.json()
         setStats(statsData.stats)
       }
 
       // Fetch users
-      const usersResponse = await authFetch('http://localhost:8004/api/admin/users')
+      const usersResponse = await authFetch('http://localhost:8000/api/admin/users')
       if (usersResponse.ok) {
         const usersData = await usersResponse.json()
         setUsers(usersData.users)
       }
 
       // Fetch modules
-      const modulesResponse = await authFetch('http://localhost:8004/api/admin/modules')
+      const modulesResponse = await authFetch('http://localhost:8000/api/admin/modules')
       if (modulesResponse.ok) {
         const modulesData = await modulesResponse.json()
         setModules(modulesData.modules)
       }
 
       // Fetch headlines
-      const headlinesResponse = await authFetch('http://localhost:8004/api/admin/headlines')
+      const headlinesResponse = await authFetch('http://localhost:8000/api/admin/headlines')
       if (headlinesResponse.ok) {
         const headlinesData = await headlinesResponse.json()
         setHeadlines(headlinesData.headlines)
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
     e.preventDefault()
     
     try {
-      const response = await authFetch('http://localhost:8004/api/admin/users/create', {
+      const response = await authFetch('http://localhost:8000/api/admin/users/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
     if (!editingUser) return
     
     try {
-      const response = await authFetch(`http://localhost:8004/api/admin/users/${editingUser.id}/update`, {
+      const response = await authFetch(`http://localhost:8000/api/admin/users/${editingUser.id}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
     if (!window.confirm('Are you sure you want to delete this user?')) return
     
     try {
-      const response = await authFetch(`http://localhost:8004/api/admin/users/${userId}/delete`, {
+      const response = await authFetch(`http://localhost:8000/api/admin/users/${userId}/delete`, {
         method: 'DELETE'
       })
       
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
     e.preventDefault()
     
     try {
-      const response = await authFetch(`http://localhost:8004/api/admin/users/${passwordForm.user_id}/change-password`, {
+      const response = await authFetch(`http://localhost:8000/api/admin/users/${passwordForm.user_id}/change-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -228,7 +228,7 @@ export default function AdminDashboard() {
     if (!window.confirm('Are you sure you want to delete this module? This action cannot be undone.')) return
     
     try {
-      const response = await authFetch(`http://localhost:8004/api/admin/modules/${moduleId}/delete`, {
+      const response = await authFetch(`http://localhost:8000/api/admin/modules/${moduleId}/delete`, {
         method: 'DELETE'
       })
       
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
     e.preventDefault()
     
     try {
-      const response = await authFetch('http://localhost:8004/api/admin/headlines/create', {
+      const response = await authFetch('http://localhost:8000/api/admin/headlines/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -280,7 +280,7 @@ export default function AdminDashboard() {
     if (!editingHeadline) return
     
     try {
-      const response = await authFetch(`http://localhost:8004/api/admin/headlines/${editingHeadline.id}/update`, {
+      const response = await authFetch(`http://localhost:8000/api/admin/headlines/${editingHeadline.id}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -309,7 +309,7 @@ export default function AdminDashboard() {
     if (!window.confirm('Are you sure you want to delete this headline?')) return
     
     try {
-      const response = await authFetch(`http://localhost:8004/api/admin/headlines/${headlineId}/delete`, {
+      const response = await authFetch(`http://localhost:8000/api/admin/headlines/${headlineId}/delete`, {
         method: 'DELETE'
       })
       
@@ -375,7 +375,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <Icon icon="line-md:loading-loop" className="text-6xl text-blue-600 mx-auto mb-4" />
-            <p className="text-gray-600">Loading admin dashboard...</p>
+            <p className="text-gray-600">Memuat dasbor admin...</p>
           </div>
         </div>
       </RootLayout>
@@ -388,8 +388,8 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-2">Manage users, modules, and headlines</p>
+            <h1 className="text-3xl font-bold">Dasbor Admin</h1>
+            <p className="text-gray-600 mt-2">Kelola pengguna, modul, dan berita</p>
           </div>
         </div>
 
@@ -404,7 +404,7 @@ export default function AdminDashboard() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Dashboard
+              Dasbor
             </button>
             <button
               onClick={() => setActiveTab('users')}
@@ -414,7 +414,7 @@ export default function AdminDashboard() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Users
+              Pengguna
             </button>
             <button
               onClick={() => setActiveTab('modules')}
@@ -424,7 +424,7 @@ export default function AdminDashboard() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Modules
+              Modul
             </button>
             <button
               onClick={() => setActiveTab('headlines')}
@@ -434,7 +434,7 @@ export default function AdminDashboard() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Headlines
+              Berita
             </button>
           </nav>
         </div>
@@ -450,7 +450,7 @@ export default function AdminDashboard() {
                     <Icon icon="mdi:account-group" className="text-blue-600 text-xl" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Users</p>
+                    <p className="text-sm font-medium text-gray-600">Total Pengguna</p>
                     <p className="text-2xl font-semibold">{stats?.total_users || 0}</p>
                   </div>
                 </div>
@@ -462,7 +462,7 @@ export default function AdminDashboard() {
                     <Icon icon="mdi:teacher" className="text-green-600 text-xl" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Teachers</p>
+                    <p className="text-sm font-medium text-gray-600">Pengajar</p>
                     <p className="text-2xl font-semibold">{stats?.total_teachers || 0}</p>
                   </div>
                 </div>
@@ -474,7 +474,7 @@ export default function AdminDashboard() {
                     <Icon icon="mdi:account-school" className="text-purple-600 text-xl" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Students</p>
+                    <p className="text-sm font-medium text-gray-600">Siswa</p>
                     <p className="text-2xl font-semibold">{stats?.total_students || 0}</p>
                   </div>
                 </div>
@@ -486,7 +486,7 @@ export default function AdminDashboard() {
                     <Icon icon="mdi:book-open-page-variant" className="text-yellow-600 text-xl" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Modules</p>
+                    <p className="text-sm font-medium text-gray-600">Modul</p>
                     <p className="text-2xl font-semibold">{stats?.total_modules || 0}</p>
                   </div>
                 </div>
@@ -495,7 +495,7 @@ export default function AdminDashboard() {
 
             {/* Recent Activity */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-6">Recent Activity</h2>
+              <h2 className="text-xl font-bold mb-6">Aktivitas Terbaru</h2>
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -504,8 +504,8 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-900">User Management</p>
-                    <p className="text-sm text-gray-500">Manage students and teachers</p>
+                    <p className="text-sm font-medium text-gray-900">Manajemen Pengguna</p>
+                    <p className="text-sm text-gray-500">Kelola siswa dan pengajar</p>
                   </div>
                 </div>
                 
@@ -516,8 +516,8 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-900">Module Management</p>
-                    <p className="text-sm text-gray-500">Create and manage learning modules</p>
+                    <p className="text-sm font-medium text-gray-900">Manajemen Modul</p>
+                    <p className="text-sm text-gray-500">Buat dan kelola modul pembelajaran</p>
                   </div>
                 </div>
                 
@@ -528,8 +528,8 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-900">Headline Management</p>
-                    <p className="text-sm text-gray-500">Update news and announcements</p>
+                    <p className="text-sm font-medium text-gray-900">Manajemen Berita</p>
+                    <p className="text-sm text-gray-500">Perbarui berita dan pengumuman</p>
                   </div>
                 </div>
               </div>
@@ -541,7 +541,7 @@ export default function AdminDashboard() {
         {activeTab === 'users' && (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">User Management</h2>
+              <h2 className="text-2xl font-bold">Manajemen Pengguna</h2>
               <Button 
                 variant="primary" 
                 onClick={() => {
@@ -551,7 +551,7 @@ export default function AdminDashboard() {
                 }}
               >
                 <Icon icon="tabler:plus" className="text-xl" />
-                Add User
+                Tambah Pengguna
               </Button>
             </div>
             
@@ -560,19 +560,19 @@ export default function AdminDashboard() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
+                      Pengguna
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Role
+                      Peran
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Institution
+                      Institusi
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Registered
+                      Terdaftar
                     </th>
                     <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
+                      Aksi
                     </th>
                   </tr>
                 </thead>
@@ -594,7 +594,7 @@ export default function AdminDashboard() {
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-blue-100 text-blue-800'
                         }`}>
-                          {user.role.name}
+                          {user.role.name === 'Teacher' ? 'Pengajar' : 'Siswa'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -614,7 +614,7 @@ export default function AdminDashboard() {
                           onClick={() => handleDeleteUser(user.id)}
                           className="text-red-600 hover:text-red-900"
                         >
-                          Delete
+                          Hapus
                         </button>
                       </td>
                     </tr>
@@ -629,7 +629,7 @@ export default function AdminDashboard() {
         {activeTab === 'modules' && (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Module Management</h2>
+              <h2 className="text-2xl font-bold">Manajemen Modul</h2>
             </div>
             
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -637,19 +637,19 @@ export default function AdminDashboard() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Module
+                      Modul
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Author
+                      Penulis
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Created
+                      Dibuat
                     </th>
                     <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
+                      Aksi
                     </th>
                   </tr>
                 </thead>
@@ -669,7 +669,7 @@ export default function AdminDashboard() {
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-yellow-100 text-yellow-800'
                         }`}>
-                          {module.is_published ? 'Published' : 'Draft'}
+                          {module.is_published ? 'Dipublikasi' : 'Draft'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -680,7 +680,7 @@ export default function AdminDashboard() {
                           onClick={() => handleDeleteModule(module.id)}
                           className="text-red-600 hover:text-red-900"
                         >
-                          Delete
+                          Hapus
                         </button>
                       </td>
                     </tr>
@@ -695,7 +695,7 @@ export default function AdminDashboard() {
         {activeTab === 'headlines' && (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Headline Management</h2>
+              <h2 className="text-2xl font-bold">Manajemen Berita</h2>
               <Button 
                 variant="primary" 
                 onClick={() => {
@@ -705,7 +705,7 @@ export default function AdminDashboard() {
                 }}
               >
                 <Icon icon="tabler:plus" className="text-xl" />
-                Add Headline
+                Tambah Berita
               </Button>
             </div>
             
@@ -714,13 +714,13 @@ export default function AdminDashboard() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Headline
+                      Berita
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       URL
                     </th>
                     <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
+                      Aksi
                     </th>
                   </tr>
                 </thead>
@@ -744,7 +744,7 @@ export default function AdminDashboard() {
                           onClick={() => handleDeleteHeadline(headline.id)}
                           className="text-red-600 hover:text-red-900"
                         >
-                          Delete
+                          Hapus
                         </button>
                       </td>
                     </tr>
@@ -761,13 +761,13 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900">
-                  {editingUser ? 'Edit User' : 'Add New User'}
+                  {editingUser ? 'Edit Pengguna' : 'Tambah Pengguna Baru'}
                 </h3>
               </div>
               <form onSubmit={editingUser ? handleUpdateUser : handleCreateUser}>
                 <div className="px-6 py-4 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                    <label className="block text-sm font-medium text-gray-700">Nama Lengkap</label>
                     <input
                       type="text"
                       value={userForm.full_name}
@@ -778,7 +778,7 @@ export default function AdminDashboard() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Username</label>
+                    <label className="block text-sm font-medium text-gray-700">Nama Pengguna</label>
                     <input
                       type="text"
                       value={userForm.username}
@@ -800,7 +800,7 @@ export default function AdminDashboard() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Institution</label>
+                    <label className="block text-sm font-medium text-gray-700">Institusi</label>
                     <input
                       type="text"
                       value={userForm.institution}
@@ -811,14 +811,14 @@ export default function AdminDashboard() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Role</label>
+                    <label className="block text-sm font-medium text-gray-700">Peran</label>
                     <select
                       value={userForm.role}
                       onChange={(e) => setUserForm({...userForm, role: parseInt(e.target.value)})}
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     >
-                      <option value={2}>Student</option>
-                      <option value={3}>Teacher</option>
+                      <option value={2}>Siswa</option>
+                      <option value={3}>Pengajar</option>
                     </select>
                   </div>
                   
@@ -836,7 +836,7 @@ export default function AdminDashboard() {
                   
                   {!editingUser && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Password</label>
+                      <label className="block text-sm font-medium text-gray-700">Kata Sandi</label>
                       <input
                         type="password"
                         value={userForm.password}
@@ -857,10 +857,10 @@ export default function AdminDashboard() {
                       resetUserForm()
                     }}
                   >
-                    Cancel
+                    Batal
                   </Button>
                   <Button type="submit" variant="primary">
-                    {editingUser ? 'Update User' : 'Create User'}
+                    {editingUser ? 'Perbarui Pengguna' : 'Buat Pengguna'}
                   </Button>
                 </div>
               </form>
@@ -874,13 +874,13 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900">
-                  {editingHeadline ? 'Edit Headline' : 'Add New Headline'}
+                  {editingHeadline ? 'Edit Berita' : 'Tambah Berita Baru'}
                 </h3>
               </div>
               <form onSubmit={editingHeadline ? handleUpdateHeadline : handleCreateHeadline}>
                 <div className="px-6 py-4 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Title</label>
+                    <label className="block text-sm font-medium text-gray-700">Judul</label>
                     <input
                       type="text"
                       value={headlineForm.title}
@@ -911,10 +911,10 @@ export default function AdminDashboard() {
                       resetHeadlineForm()
                     }}
                   >
-                    Cancel
+                    Batal
                   </Button>
                   <Button type="submit" variant="primary">
-                    {editingHeadline ? 'Update Headline' : 'Create Headline'}
+                    {editingHeadline ? 'Perbarui Berita' : 'Buat Berita'}
                   </Button>
                 </div>
               </form>
@@ -927,12 +927,12 @@ export default function AdminDashboard() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900">Change Password</h3>
+                <h3 className="text-lg font-medium text-gray-900">Ubah Kata Sandi</h3>
               </div>
               <form onSubmit={handleChangePassword}>
                 <div className="px-6 py-4 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">New Password</label>
+                    <label className="block text-sm font-medium text-gray-700">Kata Sandi Baru</label>
                     <input
                       type="password"
                       value={passwordForm.new_password}
@@ -948,10 +948,10 @@ export default function AdminDashboard() {
                     variant="secondary" 
                     onClick={() => setPasswordForm({ user_id: 0, new_password: '' })}
                   >
-                    Cancel
+                    Batal
                   </Button>
                   <Button type="submit" variant="primary">
-                    Change Password
+                    Ubah Kata Sandi
                   </Button>
                 </div>
               </form>

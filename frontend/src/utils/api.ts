@@ -3,14 +3,14 @@
 import { authFetch } from './auth';
 import type { ModulesOverviewResponse, ModuleDetailResponse } from '../types/modules';
 
-const API_BASE_URL = 'http://localhost:8004/api';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 /**
  * Fetch all modules with their lessons
  * @returns Promise with modules overview data
  */
 export async function fetchModulesOverview(): Promise<ModulesOverviewResponse> {
-  const response = await authFetch(`${API_BASE_URL}/modules/overview`);
+  const response = await fetch(`${API_BASE_URL}/modules/overview`);
   
   if (!response.ok) {
     throw new Error('Failed to fetch modules overview');

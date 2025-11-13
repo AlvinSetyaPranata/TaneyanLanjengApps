@@ -59,7 +59,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchRoles() {
       try {
-        const response = await fetch('http://localhost:8004/api/roles/');
+        const response = await fetch('http://localhost:8000/api/roles/');
         if (response.ok) {
           const rolesData = await response.json();
           const roleMap: {[key: string]: number} = {};
@@ -85,15 +85,15 @@ export default function Home() {
   
   const data = [
     {
-      title: "This is just a news",
+      title: "Ini hanya berita",
       url: "/",
     },
     {
-      title: "This is just a news",
+      title: "Ini hanya berita",
       url: "/home",
     },
     {
-      title: "This is just a news",
+      title: "Ini hanya berita",
       url: "/",
     },
   ];
@@ -121,7 +121,7 @@ export default function Home() {
         setIsLoading(true);
         const token = localStorage.getItem('access_token');
         const endpoint = isTeacher ? 'teacher/stats' : 'student/stats';
-        const response = await fetch(`http://localhost:8004/api/${endpoint}`, {
+        const response = await fetch(`http://localhost:8000/api/${endpoint}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

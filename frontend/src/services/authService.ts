@@ -2,7 +2,7 @@
 
 import type { User } from '../utils/auth';
 
-const API_BASE_URL = 'http://localhost:8004/api';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 export interface LoginRequest {
   username: string;
@@ -43,7 +43,7 @@ export async function login(credentials: LoginRequest): Promise<AuthResponse> {
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include',
+    credentials: 'include', // This is important for cookies
     body: JSON.stringify(credentials),
   });
 
@@ -51,6 +51,11 @@ export async function login(credentials: LoginRequest): Promise<AuthResponse> {
 
   if (!response.ok) {
     throw new Error(data.message || 'Login failed');
+  }
+
+  // Check if the response has the expected structure
+  if (!data.access_token || !data.refresh_token || !data.user) {
+    throw new Error('Invalid response from server');
   }
 
   return data;
@@ -96,7 +101,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<{ access
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include',
+    credentials: 'include', // This is important for cookies
     body: JSON.stringify({ refresh: refreshToken }),
   });
 

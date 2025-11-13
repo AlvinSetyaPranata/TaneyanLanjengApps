@@ -47,7 +47,7 @@ export default function TeacherModuleDetail() {
         setError(null)
         const token = localStorage.getItem('access_token')
         
-        const response = await fetch(`http://localhost:8004/api/modules/${module_id}/detail`, {
+        const response = await fetch(`http://localhost:8000/api/modules/${module_id}/detail`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -57,11 +57,11 @@ export default function TeacherModuleDetail() {
           const data = await response.json()
           setModule(data.module)
         } else {
-          setError('Failed to load module details')
+          setError('Gagal memuat detail modul')
         }
       } catch (err) {
         console.error('Error fetching module:', err)
-        setError('Error loading module. Please try again.')
+        setError('Error memuat modul. Silakan coba lagi.')
       } finally {
         setIsLoading(false)
       }
@@ -72,13 +72,13 @@ export default function TeacherModuleDetail() {
 
   // Delete lesson
   const handleDeleteLesson = async (lessonId: number, lessonTitle: string) => {
-    if (!confirm(`Are you sure you want to delete "${lessonTitle}"? This action cannot be undone.`)) {
+    if (!confirm(`Apakah Anda yakin ingin menghapus "${lessonTitle}"? Tindakan ini tidak dapat dibatalkan.`)) {
       return
     }
 
     try {
       const token = localStorage.getItem('access_token')
-      const response = await fetch(`http://localhost:8004/api/lessons/${lessonId}/`, {
+      const response = await fetch(`http://localhost:8000/api/lessons/${lessonId}/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -91,13 +91,13 @@ export default function TeacherModuleDetail() {
           ...prev,
           lessons: prev.lessons.filter(l => l.id !== lessonId)
         } : null)
-        alert('Lesson deleted successfully')
+        alert('Materi berhasil dihapus')
       } else {
-        alert('Failed to delete lesson')
+        alert('Gagal menghapus materi')
       }
     } catch (err) {
       console.error('Error deleting lesson:', err)
-      alert('Error deleting lesson')
+      alert('Error menghapus materi')
     }
   }
 

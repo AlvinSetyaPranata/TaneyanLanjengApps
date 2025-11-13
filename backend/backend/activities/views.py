@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Count, Avg
 from django.db.models.functions import TruncMonth
-from datetime import datetime, timedelta
+from django.utils import timezone
+from datetime import timedelta
 from .models import (
     Activity,
     UserOverview
@@ -72,7 +73,7 @@ def student_stats(request):
         lessons_completed += int((activity.progress / 100) * module_lessons_count)
     
     # Get monthly activity for last 6 months
-    six_months_ago = datetime.now() - timedelta(days=180)
+    six_months_ago = timezone.now() - timedelta(days=180)
     monthly_progress = activities.filter(
         date_updated__gte=six_months_ago
     ).annotate(

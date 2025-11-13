@@ -33,7 +33,7 @@ export default function TeacherDashboard() {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem('access_token')
-        const response = await fetch('http://localhost:8004/api/teacher/stats', {
+        const response = await fetch('http://localhost:8000/api/teacher/stats', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -59,7 +59,7 @@ export default function TeacherDashboard() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <Icon icon="line-md:loading-loop" className="text-6xl text-blue-600 mx-auto mb-4" />
-            <p className="text-gray-600">Loading dashboard...</p>
+            <p className="text-gray-600">Memuat dasbor...</p>
           </div>
         </div>
       </RootLayout>
@@ -72,20 +72,20 @@ export default function TeacherDashboard() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Teacher Dashboard</h1>
-            <p className="text-gray-600 mt-2">Manage your modules and track your teaching activity</p>
+            <h1 className="text-3xl font-bold">Dasbor Pengajar</h1>
+            <p className="text-gray-600 mt-2">Kelola modul Anda dan lacak aktivitas mengajar</p>
           </div>
           <div className="flex gap-3">
             <Link to="/teacher/modules/create">
               <Button variant="secondary">
                 <Icon icon="tabler:plus" className="text-xl" />
-                New Module
+                Modul Baru
               </Button>
             </Link>
             <Link to="/teacher/lessons/create">
               <Button variant="primary">
                 <Icon icon="tabler:pencil-plus" className="text-xl" />
-                New Lesson
+                Materi Baru
               </Button>
             </Link>
           </div>
@@ -94,17 +94,17 @@ export default function TeacherDashboard() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <DashboardCard
-            title="Total Modules"
+            title="Total Modul"
             content={stats?.total_modules.toString() || '0'}
             iconName="tabler:books"
           />
           <DashboardCard
-            title="Total Lessons"
+            title="Total Materi"
             content={stats?.total_lessons.toString() || '0'}
             iconName="tabler:file-text"
           />
           <DashboardCard
-            title="Students Enrolled"
+            title="Siswa Terdaftar"
             content={stats?.total_students_enrolled.toString() || '0'}
             iconName="tabler:users"
           />
@@ -114,7 +114,7 @@ export default function TeacherDashboard() {
         {stats?.last_module && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">Recently Created Module</h2>
+              <h2 className="text-xl font-bold">Modul yang Baru Dibuat</h2>
               <Link 
                 to={`/teacher/modules/${stats.last_module.id}/edit`}
                 className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
@@ -137,7 +137,7 @@ export default function TeacherDashboard() {
                 <div className="flex gap-4 text-sm text-gray-500">
                   <span className="flex items-center gap-1">
                     <Icon icon="tabler:file-text" />
-                    {stats.last_module.lessons_count} lessons
+                    {stats.last_module.lessons_count} materi
                   </span>
                   <span className="flex items-center gap-1">
                     <Icon icon="tabler:calendar" />
@@ -145,7 +145,7 @@ export default function TeacherDashboard() {
                   </span>
                   <span className={`flex items-center gap-1 ${stats.last_module.is_published ? 'text-green-600' : 'text-orange-600'}`}>
                     <Icon icon={stats.last_module.is_published ? "tabler:eye" : "tabler:eye-off"} />
-                    {stats.last_module.is_published ? 'Published' : 'Draft'}
+                    {stats.last_module.is_published ? 'Dipublikasi' : 'Draft'}
                   </span>
                 </div>
               </div>
@@ -156,23 +156,23 @@ export default function TeacherDashboard() {
         {/* Monthly Activity */}
         {stats?.monthly_activity && stats.monthly_activity.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-6">Monthly Activity (Last 6 Months)</h2>
+            <h2 className="text-xl font-bold mb-6">Aktivitas Bulanan (6 Bulan Terakhir)</h2>
             <div className="space-y-4">
               {stats.monthly_activity.map((activity) => (
                 <div key={activity.month} className="flex items-center gap-4">
                   <div className="w-24 text-sm font-medium text-gray-700">
-                    {new Date(activity.month + '-01').toLocaleDateString('en-US', { 
+                    {new Date(activity.month + '-01').toLocaleDateString('id-ID', { 
                       month: 'short', 
                       year: 'numeric' 
                     })}
                   </div>
                   <div className="flex-1 grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Modules</span>
+                      <span className="text-sm text-gray-600">Modul</span>
                       <span className="text-lg font-bold text-blue-600">{activity.modules_created}</span>
                     </div>
                     <div className="bg-green-50 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Lessons</span>
+                      <span className="text-sm text-gray-600">Materi</span>
                       <span className="text-lg font-bold text-green-600">{activity.lessons_created}</span>
                     </div>
                   </div>
@@ -186,12 +186,12 @@ export default function TeacherDashboard() {
         {(!stats?.monthly_activity || stats.monthly_activity.length === 0) && (
           <div className="bg-gray-50 rounded-lg p-12 text-center">
             <Icon icon="tabler:book-off" className="text-6xl text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No Activity Yet</h3>
-            <p className="text-gray-500 mb-6">Start creating modules and lessons to see your activity here</p>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">Belum Ada Aktivitas</h3>
+            <p className="text-gray-500 mb-6">Mulai buat modul dan materi untuk melihat aktivitas Anda di sini</p>
             <Link to="/teacher/lessons/create">
               <Button variant="primary">
                 <Icon icon="tabler:pencil-plus" className="text-xl" />
-                Create Your First Lesson
+                Buat Materi Pertama Anda
               </Button>
             </Link>
           </div>

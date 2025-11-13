@@ -21,7 +21,7 @@ export default function Modules() {
   useEffect(() => {
     async function fetchRoles() {
       try {
-        const response = await fetch('http://localhost:8004/api/roles/');
+        const response = await fetch('http://localhost:8000/api/roles/');
         if (response.ok) {
           const rolesData = await response.json();
           const roleMap: {[key: string]: number} = {};
@@ -104,7 +104,7 @@ export default function Modules() {
 
     try {
       const token = localStorage.getItem('access_token')
-      const response = await fetch(`http://localhost:8004/api/modules/${moduleId}/`, {
+      const response = await fetch(`http://localhost:8000/api/modules/${moduleId}/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

@@ -18,7 +18,7 @@ const loginSchema = z.object({
   }).min(1, { message: 'Nama pengguna wajib diisi' }),
   password: z.string({
     message: 'Kata sandi wajib diisi',
-  }).min(6, { message: 'Kata sandi minimal 6 karakter' }),
+  }).min(1, { message: 'Kata sandi wajib diisi' }), // Changed from 6 to 1 to match any password
 });
 
 export default function Login() {
@@ -78,7 +78,11 @@ export default function Login() {
       navigate('/');
     } catch (error: any) {
       console.error('Login error:', error);
-      setErrors({ username: error.message || 'Terjadi kesalahan. Silakan coba lagi.' });
+      // Set error for username field as that's what we show in the UI
+      setErrors({ 
+        username: error.message || 'Terjadi kesalahan. Silakan coba lagi.',
+        password: error.message || 'Terjadi kesalahan. Silakan coba lagi.'
+      });
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +100,7 @@ export default function Login() {
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
-            label="Username"
+            label="Nama Pengguna"
             type="text"
             name="username"
             value={formData.username}
@@ -108,13 +112,13 @@ export default function Login() {
           />
 
           <Input
-            label="Password"
+            label="Kata Sandi"
             type="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
             error={errors.password}
-            placeholder="Masukkan password"
+            placeholder="Masukkan kata sandi"
             required
             autoComplete="current-password"
           />

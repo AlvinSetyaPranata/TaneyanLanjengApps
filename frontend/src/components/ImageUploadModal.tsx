@@ -4,7 +4,7 @@ import Button from './atoms/Button'
 interface ImageUploadModalProps {
   isOpen: boolean
   onClose: () => void
-  onImageSelected: (url: string) => void
+  onImageSelected: (url: string | null) => void
 }
 
 export default function ImageUploadModal({ isOpen, onClose, onImageSelected }: ImageUploadModalProps) {
@@ -27,7 +27,7 @@ export default function ImageUploadModal({ isOpen, onClose, onImageSelected }: I
       formData.append('image', file)
 
       const token = localStorage.getItem('access_token')
-      const response = await fetch('http://localhost:8004/api/upload/image', {
+      const response = await fetch('http://localhost:8000/api/upload/image', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -52,7 +52,7 @@ export default function ImageUploadModal({ isOpen, onClose, onImageSelected }: I
   }
 
   const handleUrlSubmit = () => {
-    if (!imageUrl) {
+    if (!imageUrl || imageUrl.trim() === '') {
       setError('Silakan masukkan URL gambar')
       return
     }
@@ -63,6 +63,7 @@ export default function ImageUploadModal({ isOpen, onClose, onImageSelected }: I
       onClose()
     } catch (err) {
       setError('Silakan masukkan URL yang valid')
+      return
     }
   }
 

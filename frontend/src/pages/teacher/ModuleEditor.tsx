@@ -11,7 +11,7 @@ interface ModuleFormData {
   title: string
   description: string
   deadline: string
-  cover_image: string
+  cover_image: string | null
   is_published: boolean
 }
 
@@ -25,7 +25,7 @@ export default function ModuleEditor() {
     title: '',
     description: '',
     deadline: '',
-    cover_image: '',
+    cover_image: null,
     is_published: false
   })
   const [localImage, setLocalImage] = useState<File | null>(null)
@@ -47,7 +47,7 @@ export default function ModuleEditor() {
       const fetchModule = async () => {
         try {
           const token = localStorage.getItem('access_token')
-          const response = await fetch(`http://localhost:8004/api/modules/${module_id}/`, {
+          const response = await fetch(`http://localhost:8000/api/modules/${module_id}/`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -62,7 +62,7 @@ export default function ModuleEditor() {
               title: data.title,
               description: data.description || '',
               deadline: formattedDeadline,
-              cover_image: data.cover_image || '',
+              cover_image: data.cover_image && data.cover_image.trim() !== '' ? data.cover_image : null,
               is_published: data.is_published
             })
           }
@@ -77,11 +77,11 @@ export default function ModuleEditor() {
   const handleSave = async () => {
     // Validation
     if (!formData.title.trim()) {
-      alert('Please enter a module title')
+      alert('Silakan masukkan judul modul')
       return
     }
     if (!formData.deadline) {
-      alert('Please select a deadline')
+      alert('Silakan pilih batas waktu')
       return
     }
 
@@ -94,14 +94,14 @@ export default function ModuleEditor() {
         title: formData.title,
         description: formData.description,
         deadline: formData.deadline ? new Date(formData.deadline + 'T23:59:59').toISOString() : new Date().toISOString(),
-        cover_image: formData.cover_image || null,
+        cover_image: formData.cover_image && formData.cover_image.trim() !== '' ? formData.cover_image : null,
         is_published: formData.is_published,
         ...(module_id ? {} : { author: user?.id })
       }
       
       const url = module_id 
-        ? `http://localhost:8004/api/modules/${module_id}/`
-        : 'http://localhost:8004/api/modules/'
+        ? `http://localhost:8000/api/modules/${module_id}/`
+        : 'http://localhost:8000/api/modules/'
       
       const method = module_id ? 'PUT' : 'POST'
       
@@ -116,7 +116,7 @@ export default function ModuleEditor() {
 
       if (response.ok) {
         const data = await response.json()
-        alert('Module saved successfully!')
+        alert('Modul berhasil disimpan!')
         // For existing modules, we already have the module_id
         if (module_id) {
           navigate(`/teacher/modules/${module_id}`)
@@ -134,19 +134,19 @@ export default function ModuleEditor() {
             navigate(`/teacher/modules/${module_id}/lessons/create`)
           }
         } else {
-          alert(`Error saving module: ${error.error || JSON.stringify(error)}`)
+          alert(`Error menyimpan modul: ${error.error || JSON.stringify(error)}`)
         }
       }
     } catch (error) {
       console.error('Error saving module:', error)
-      alert('Failed to save module')
+      alert('Gagal menyimpan modul')
     } finally {
       setIsSaving(false)
     }
   }
 
   const handleCancel = () => {
-    if (confirm('Are you sure you want to cancel? Unsaved changes will be lost.')) {
+    if (confirm('Apakah Anda yakin ingin membatalkan? Perubahan yang belum disimpan akan hilang.')) {
       navigate('/teacher/modules')
     }
   }
@@ -242,7 +242,7 @@ export default function ModuleEditor() {
               </p>
               
               {/* Image Preview */}
-              {formData.cover_image && (
+              {formData.cover_image && formData.cover_image.trim() !== '' && (
                 <div className="mt-4">
                   <p className="text-sm font-medium mb-2">Pratinjau:</p>
                   <img 
@@ -257,6 +257,13 @@ export default function ModuleEditor() {
                   <p className="text-xs text-gray-500 mt-2">
                     Gambar akan disimpan sebagai URL permanen di database
                   </p>
+                  <button 
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, cover_image: null }))}
+                    className="mt-2 text-sm text-red-600 hover:text-red-800"
+                  >
+                    Hapus Gambar
+                  </button>
                 </div>
               )}
             </div>
@@ -352,7 +359,9 @@ export default function ModuleEditor() {
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}
         onImageSelected={(url) => {
-          setFormData(prev => ({ ...prev, cover_image: url }))
+          // Handle empty strings by converting them to null
+          const imageUrl = url && url.trim() !== '' ? url : null
+          setFormData(prev => ({ ...prev, cover_image: imageUrl }))
           // Clean up any existing blob URLs
           if (localImageBlobUrl) {
             URL.revokeObjectURL(localImageBlobUrl)

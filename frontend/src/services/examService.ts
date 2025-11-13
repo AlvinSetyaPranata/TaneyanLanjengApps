@@ -2,7 +2,7 @@
 
 import { authFetch } from '../utils/auth';
 
-const API_BASE_URL = 'http://localhost:8004/api';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 /**
  * Submit exam answers
