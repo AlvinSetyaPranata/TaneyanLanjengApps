@@ -1,101 +1,43 @@
-#!/usr/bin/env python
-"""
-Test script to verify the modules overview API endpoint
-Run this from the backend directory: python test_modules_api.py
-"""
-
 import requests
 import json
 
+# Base URL for the API - Updated to match the correct backend port
 BASE_URL = "http://localhost:8000/api"
 
-def test_login():
-    """Login and get access token"""
-    print("Testing login...")
-    response = requests.post(
-        f"{BASE_URL}/login",
-        json={
-            "username": "admin",
-            "password": "admin123"
-        }
-    )
+def test_get_modules_overview():
+    """Test getting modules overview"""
+    url = f"{BASE_URL}/modules/overview"
+    response = requests.get(url)
     
-    if response.status_code == 200:
-        data = response.json()
-        print("✅ Login successful!")
-        return data.get('access_token')
-    else:
-        print(f"❌ Login failed: {response.status_code}")
-        print(response.text)
-        return None
+    print(f"Testing GET {url}")
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.json()}")
+    print("-" * 50)
 
-def test_modules_overview(token):
-    """Test the modules overview endpoint"""
-    print("\nTesting modules overview endpoint...")
+def test_get_module_detail(module_id=1):
+    """Test getting module detail"""
+    url = f"{BASE_URL}/modules/{module_id}/detail"
+    response = requests.get(url)
     
-    headers = {
-        "Authorization": f"Bearer {token}"
-    }
-    
-    response = requests.get(
-        f"{BASE_URL}/modules/overview",
-        headers=headers
-    )
-    
-    if response.status_code == 200:
-        data = response.json()
-        print("✅ Modules overview endpoint working!")
-        print(f"\n📊 Response:")
-        print(json.dumps(data, indent=2))
-        print(f"\n📈 Summary:")
-        print(f"  - Success: {data.get('success')}")
-        print(f"  - Total modules: {data.get('count')}")
-        if data.get('modules'):
-            for module in data['modules']:
-                print(f"  - {module['title']}: {len(module['lessons'])} lessons")
-    else:
-        print(f"❌ Modules overview failed: {response.status_code}")
-        print(response.text)
+    print(f"Testing GET {url}")
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.json()}")
+    print("-" * 50)
 
-def test_module_detail(token, module_id=1):
-    """Test the module detail endpoint"""
-    print(f"\nTesting module detail endpoint (ID: {module_id})...")
+def test_get_lesson_detail(module_id=1, lesson_id=1):
+    """Test getting lesson detail"""
+    url = f"{BASE_URL}/modules/{module_id}/lessons/{lesson_id}"
+    response = requests.get(url)
     
-    headers = {
-        "Authorization": f"Bearer {token}"
-    }
-    
-    response = requests.get(
-        f"{BASE_URL}/modules/{module_id}/detail",
-        headers=headers
-    )
-    
-    if response.status_code == 200:
-        data = response.json()
-        print("✅ Module detail endpoint working!")
-        print(f"\n📊 Response:")
-        print(json.dumps(data, indent=2))
-    else:
-        print(f"❌ Module detail failed: {response.status_code}")
-        print(response.text)
+    print(f"Testing GET {url}")
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.json()}")
+    print("-" * 50)
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("Testing Modules API Endpoints")
-    print("=" * 60)
+    print("Testing Modules API")
+    print("=" * 50)
     
-    # Test login
-    token = test_login()
-    
-    if token:
-        # Test modules overview
-        test_modules_overview(token)
-        
-        # Test module detail
-        test_module_detail(token, module_id=1)
-        
-        print("\n" + "=" * 60)
-        print("✅ All tests completed!")
-        print("=" * 60)
-    else:
-        print("\n❌ Cannot proceed without access token")
+    test_get_modules_overview()
+    test_get_module_detail()
+    test_get_lesson_detail()

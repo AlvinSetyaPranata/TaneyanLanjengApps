@@ -32,7 +32,13 @@ SECRET_KEY = 'django-insecure-v8ypp(=6y@-87%o1_v#clrw%hp&$82u(houwzu^=#k85u#=dq=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['d3d8e75e392c.ngrok-free.app']
+ALLOWED_HOSTS = [
+    'd3d8e75e392c.ngrok-free.app',
+    'localhost',
+    '127.0.0.1',
+    'localhost:8004',
+    '127.0.0.1:8004',
+]
 
 APPEND_SLASH = False
 
@@ -77,8 +83,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:5174',
     'http://localhost:5175',
     'http://127.0.0.1:5175',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
+    'http://localhost:8004',
+    'http://127.0.0.1:8004',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -194,8 +200,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5174',
     'http://localhost:5175',
     'http://127.0.0.1:5175',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
+    'http://localhost:8004',
+    'http://127.0.0.1:8004',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

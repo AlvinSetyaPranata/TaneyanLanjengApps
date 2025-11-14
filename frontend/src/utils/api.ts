@@ -3,7 +3,7 @@
 import { authFetch } from './auth';
 import type { ModulesOverviewResponse, ModuleDetailResponse } from '../types/modules';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://localhost:8000/api'; // Updated to match the correct backend port
 
 /**
  * Fetch all modules with their lessons

@@ -79,13 +79,13 @@ export default function ImageUploadModal({ isOpen, onClose, onImageSelected }: I
                 className={`py-2 px-4 font-medium ${uploadMethod === 'local' ? 'border-b-2 border-black' : 'text-gray-500'}`}
                 onClick={() => setUploadMethod('local')}
               >
-Unggah dari Komputer
+                Unggah dari Komputer
               </button>
               <button
                 className={`py-2 px-4 font-medium ${uploadMethod === 'url' ? 'border-b-2 border-black' : 'text-gray-500'}`}
                 onClick={() => setUploadMethod('url')}
               >
-Gunakan URL Gambar
+                Gunakan URL Gambar
               </button>
             </div>
           </div>

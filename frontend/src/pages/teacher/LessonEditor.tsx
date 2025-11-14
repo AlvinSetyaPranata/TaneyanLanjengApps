@@ -10,7 +10,7 @@ import Button from '../../components/atoms/Button'
 import Input from '../../components/atoms/Input'
 import Select from '../../components/atoms/Select'
 import ImageUploadModal from '../../components/ImageUploadModal'
-
+import ExamQuestionEditor from '../../components/ExamQuestionEditor'
 
 interface LessonFormData {
   title: string
@@ -389,15 +389,26 @@ console.log('Halo, Dunia!')
           ) : (
             // Edit Mode
             <div data-color-mode="light">
-              <MDEditor
-                value={formData.content}
-                onChange={(value) => setFormData(prev => ({ ...prev, content: value || '' }))}
-                height={500}
-                preview="edit"
-                hideToolbar={false}
-                enableScroll={true}
-                visibleDragbar={true}
-              />
+              {formData.lesson_type === 'exam' ? (
+                // Exam Question Editor for exam lessons
+                <div className="p-6">
+                  <ExamQuestionEditor 
+                    content={formData.content}
+                    onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                  />
+                </div>
+              ) : (
+                // Markdown Editor for regular lessons
+                <MDEditor
+                  value={formData.content}
+                  onChange={(value) => setFormData(prev => ({ ...prev, content: value || '' }))}
+                  height={500}
+                  preview="edit"
+                  hideToolbar={false}
+                  enableScroll={true}
+                  visibleDragbar={true}
+                />
+              )}
             </div>
           )}
         </div>

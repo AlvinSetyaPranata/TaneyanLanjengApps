@@ -2,3 +2,4 @@
 bin
 lib
 seed_data.py
+.sqlite3

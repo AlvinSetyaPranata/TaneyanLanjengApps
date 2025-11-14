@@ -1,4 +1,4 @@
-// Utility function to parse exam markdown content into structured questions
+// Utility function to parse exam content into structured questions
 
 export interface ExamQuestion {
   id: number;
@@ -10,6 +10,32 @@ export interface ExamQuestion {
 }
 
 export function parseExamContent(content: string): ExamQuestion[] {
+  try {
+    // Try to parse as JSON first (new format from teacher editor)
+    const jsonData = JSON.parse(content);
+    
+    // If it's an array, it's the new format
+    if (Array.isArray(jsonData)) {
+      return jsonData.map((item: any, index: number) => ({
+        id: index + 1,
+        type: 'multiple-choice',
+        question: item.question || '',
+        options: item.options ? item.options.map((opt: any) => opt.text || '') : [],
+        points: 1, // Default points
+        // Note: We don't include correctAnswer in the student view for security
+      }));
+    }
+  } catch (e) {
+    // If JSON parsing fails, fall back to markdown parsing
+    return parseMarkdownExamContent(content);
+  }
+  
+  // Default fallback
+  return [];
+}
+
+// Original markdown parsing function (kept for backward compatibility)
+function parseMarkdownExamContent(content: string): ExamQuestion[] {
   const questions: ExamQuestion[] = [];
   let questionId = 1;
   
