@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Icon } from '@iconify/react'
 import Button from './atoms/Button'
 import Input from './atoms/Input'
+import Select from './atoms/Select'
 
 interface ExamOption {
   id: string
@@ -94,6 +95,12 @@ export default function ExamQuestionEditor({ content, onChange }: ExamQuestionEd
     ))
   }
 
+  // Get the ID of the currently correct option for a question
+  const getCorrectOptionId = (question: ExamQuestion): string => {
+    const correctOption = question.options.find(opt => opt.isCorrect)
+    return correctOption ? correctOption.id : ''
+  }
+
   return (
     <div className="space-y-8">
       {questions.map((question, index) => (
@@ -130,22 +137,6 @@ export default function ExamQuestionEditor({ content, onChange }: ExamQuestionEd
             </label>
             {question.options.map((option) => (
               <div key={option.id} className="flex items-center gap-3">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id={`${question.id}-${option.id}`}
-                    name={`correct-answer-${question.id}`}
-                    checked={option.isCorrect}
-                    onChange={() => setCorrectOption(question.id, option.id)}
-                    className="h-4 w-4 text-black focus:ring-black"
-                  />
-                  <label 
-                    htmlFor={`${question.id}-${option.id}`} 
-                    className="ml-2 text-sm font-medium text-gray-700"
-                  >
-                    {option.id}.
-                  </label>
-                </div>
                 <Input
                   type="text"
                   value={option.text}
@@ -156,6 +147,24 @@ export default function ExamQuestionEditor({ content, onChange }: ExamQuestionEd
                 />
               </div>
             ))}
+            
+            {/* Dropdown to select correct answer */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Pilih Jawaban yang Benar
+              </label>
+              <Select
+                value={getCorrectOptionId(question)}
+                onChange={(e) => setCorrectOption(question.id, e.target.value)}
+                options={[
+                  { value: '', label: 'Pilih jawaban yang benar...' },
+                  ...question.options.map(option => ({
+                    value: option.id,
+                    label: `${option.id}. ${option.text}`
+                  }))
+                ]}
+              />
+            </div>
           </div>
         </div>
       ))}

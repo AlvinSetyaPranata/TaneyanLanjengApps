@@ -21,7 +21,6 @@ export default function Select({ label, error, options, className = '', ...props
         } ${className}`}
         {...props}
       >
-        <option value="">Pilih opsi</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
