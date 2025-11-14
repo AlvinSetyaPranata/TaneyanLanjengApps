@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-v8ypp(=6y@-87%o1_v#clrw%hp&$82u(houwzu^=#k85u#=dq=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['d3d8e75e392c.ngrok-free.app']
 
 APPEND_SLASH = False
 
