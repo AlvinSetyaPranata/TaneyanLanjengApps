@@ -27,6 +27,10 @@ interface ModuleWithExamInfo {
   title: string
   has_exam: boolean
   exam_count: number
+  lessons: {
+    id: number
+    order: number
+  }[]
 }
 
 export default function LessonEditor() {
@@ -54,18 +58,19 @@ export default function LessonEditor() {
     const fetchModules = async () => {
       try {
         const token = localStorage.getItem('access_token')
-        const response = await fetch('http://localhost:8000/api/modules/', {
+        // Use the teacher-specific endpoint to get teacher's modules with lessons
+        const response = await fetch('http://localhost:8000/api/modules/teacher', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         })
         if (response.ok) {
           const data = await response.json()
-          setModules(data)
+          setModules(data.modules)
           
           // If creating a new lesson for a specific module, check if it needs an exam
           if (module_id && !lesson_id) {
-            const selectedModule = data.find((m: ModuleWithExamInfo) => m.id === parseInt(module_id))
+            const selectedModule = data.modules.find((m: ModuleWithExamInfo) => m.id === parseInt(module_id))
             setCurrentModule(selectedModule || null)
             
             // If module has no exam, default to exam type
@@ -77,14 +82,35 @@ export default function LessonEditor() {
                 duration_minutes: 60
               }))
             }
+            
+            // Set the next available order number
+            if (selectedModule) {
+              const maxOrder = selectedModule.lessons.length > 0 
+                ? Math.max(...selectedModule.lessons.map((l: { order: number }) => l.order)) 
+                : 0
+              setFormData(prev => ({
+                ...prev,
+                order: maxOrder + 1
+              }))
+            }
           }
+        } else if (response.status === 401) {
+          // Handle authentication error
+          alert('Sesi Anda telah berakhir. Silakan login kembali.')
+          navigate('/login')
+        } else if (response.status === 403) {
+          // Handle forbidden access
+          alert('Akses ditolak. Hanya guru yang dapat mengakses halaman ini.')
+          navigate('/login')
+        } else {
+          console.error('Error fetching modules:', response.status, response.statusText)
         }
       } catch (error) {
         console.error('Error fetching modules:', error)
       }
     }
     fetchModules()
-  }, [module_id, lesson_id])
+  }, [module_id, lesson_id, navigate])
 
   // Fetch lesson data if editing
   useEffect(() => {
@@ -108,6 +134,10 @@ export default function LessonEditor() {
               is_published: data.is_published,
               module_id: data.module_id
             })
+          } else if (response.status === 401) {
+            // Handle authentication error
+            alert('Sesi Anda telah berakhir. Silakan login kembali.')
+            navigate('/login')
           }
         } catch (error) {
           console.error('Error fetching lesson:', error)
@@ -115,7 +145,7 @@ export default function LessonEditor() {
       }
       fetchLesson()
     }
-  }, [lesson_id])
+  }, [lesson_id, navigate])
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -137,11 +167,24 @@ export default function LessonEditor() {
       })
 
       if (response.ok) {
+        const data = await response.json()
         alert('Materi berhasil disimpan!')
+        // Redirect to the module page using the module_id from the form data
         navigate(`/teacher/modules/${formData.module_id}`)
-      } else {
+      } else if (response.status === 400) {
+        // Handle validation errors
         const error = await response.json()
-        alert(`Error menyimpan materi: ${JSON.stringify(error)}`)
+        if (error.non_field_errors) {
+          alert(`Error menyimpan materi: ${error.non_field_errors.join(', ')}`)
+        } else {
+          alert(`Error menyimpan materi: ${JSON.stringify(error)}`)
+        }
+      } else if (response.status === 401) {
+        // Handle authentication error
+        alert('Sesi Anda telah berakhir. Silakan login kembali.')
+        navigate('/login')
+      } else {
+        alert('Gagal menyimpan materi')
       }
     } catch (error) {
       console.error('Error saving lesson:', error)
@@ -265,6 +308,15 @@ console.log('Halo, Dunia!')
                         duration_minutes: 60
                       }))
                     }
+                    
+                    // Set the next available order number
+                    const maxOrder = selected.lessons.length > 0 
+                      ? Math.max(...selected.lessons.map((l: { order: number }) => l.order)) 
+                      : 0
+                    setFormData(prev => ({
+                      ...prev,
+                      order: maxOrder + 1
+                    }))
                   }
                 }}
                 options={[
@@ -298,6 +350,9 @@ console.log('Halo, Dunia!')
                 onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
                 required
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Urutan akan otomatis disetel ke posisi terakhir jika tidak diubah
+              </p>
             </div>
 
             {/* Duration */}

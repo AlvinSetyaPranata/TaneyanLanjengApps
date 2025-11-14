@@ -29,9 +29,20 @@ class ModuleView(ModelViewSet):
     serializer_class = ModuleSerializer
     permission_classes = [IsAuthenticated]
     
+    def get_queryset(self):
+        """Filter modules based on user role"""
+        user = self.request.user
+        if hasattr(user, 'role') and user.role.id == 2:  # Teacher role
+            # Teachers see only their own modules
+            return Module.objects.filter(author=user)
+        return super().get_queryset()
+    
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return ModuleCreateUpdateSerializer
+        elif self.action == 'list':
+            # For list view, return modules with lesson order info
+            return ModuleWithLessonsSerializer
         return ModuleSerializer
     
     def perform_update(self, serializer):
@@ -74,6 +85,14 @@ class LessonView(ModelViewSet):
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated]
     
+    def get_queryset(self):
+        """Filter lessons based on user role"""
+        user = self.request.user
+        if hasattr(user, 'role') and user.role.id == 2:  # Teacher role
+            # Teachers see only lessons in their own modules
+            return Lesson.objects.filter(module_id__author=user)
+        return super().get_queryset()
+    
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return LessonCreateUpdateSerializer
@@ -93,6 +112,31 @@ def modules_overview(request):
     return Response({
         'success': True,
         'count': modules.count(),
+        'modules': serializer.data
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def teacher_modules(request):
+    """
+    Get modules created by the authenticated teacher with their lessons.
+    This endpoint is specifically for teachers to manage their modules.
+    """
+    user = request.user
+    if not hasattr(user, 'role') or user.role.id != 2:  # Not a teacher
+        return Response({
+            'success': False,
+            'error': 'Access denied. Teachers only.'
+        }, status=status.HTTP_403_FORBIDDEN)
+    
+    # Get teacher's modules with lessons
+    teacher_modules = Module.objects.filter(author=user).prefetch_related('lessons').order_by('-date_created')
+    serializer = ModuleWithLessonsSerializer(teacher_modules, many=True)
+    
+    return Response({
+        'success': True,
+        'count': teacher_modules.count(),
         'modules': serializer.data
     }, status=status.HTTP_200_OK)
 
@@ -224,30 +268,45 @@ def teacher_stats(request):
     ).annotate(
         month=TruncMonth('date_created')
     ).values('month').annotate(
-        count=Count('id')
+        modules_created=Count('id')
     ).order_by('month')
     
+    # Get lessons created in the same period
     monthly_lessons = Lesson.objects.filter(
         module_id__author=user,
         date_created__gte=six_months_ago
     ).annotate(
         month=TruncMonth('date_created')
     ).values('month').annotate(
-        count=Count('id')
+        lessons_created=Count('id')
     ).order_by('month')
     
-    # Format monthly activity
+    # Combine monthly data
     monthly_activity = []
-    for module_data in monthly_modules:
-        month_str = module_data['month'].strftime('%Y-%m')
-        lesson_count = next(
-            (item['count'] for item in monthly_lessons if item['month'].strftime('%Y-%m') == month_str),
-            0
-        )
+    months = set()
+    monthly_data = {}
+    
+    # Collect all months
+    for data in monthly_modules:
+        month_str = data['month'].strftime('%Y-%m')
+        months.add(month_str)
+        if month_str not in monthly_data:
+            monthly_data[month_str] = {'modules_created': 0, 'lessons_created': 0}
+        monthly_data[month_str]['modules_created'] = data['modules_created']
+    
+    for data in monthly_lessons:
+        month_str = data['month'].strftime('%Y-%m')
+        months.add(month_str)
+        if month_str not in monthly_data:
+            monthly_data[month_str] = {'modules_created': 0, 'lessons_created': 0}
+        monthly_data[month_str]['lessons_created'] = data['lessons_created']
+    
+    # Create final monthly activity list
+    for month in sorted(months):
         monthly_activity.append({
-            'month': month_str,
-            'modules_created': module_data['count'],
-            'lessons_created': lesson_count
+            'month': month,
+            'modules_created': monthly_data[month]['modules_created'],
+            'lessons_created': monthly_data[month]['lessons_created']
         })
     
     return Response({
@@ -255,7 +314,7 @@ def teacher_stats(request):
         'stats': {
             'total_modules': total_modules,
             'total_lessons': total_lessons,
-            'total_students_enrolled': total_students,
+            'total_students': total_students,
             'last_module': last_module_data,
             'monthly_activity': monthly_activity
         }

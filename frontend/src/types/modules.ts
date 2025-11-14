@@ -24,9 +24,11 @@ export interface Module {
   is_published: boolean;
   date_created: string;
   date_updated: string;
-  lessons: Lesson[];
-  progress?: number; // 0-100 representing completion percentage
+  lessons?: Lesson[]; // Add lessons array
   lessons_count?: number;
+  has_exam?: boolean;
+  exam_count?: number;
+  progress?: number; // 0-100 representing completion percentage
 }
 
 export interface ModulesOverviewResponse {

@@ -19,6 +19,7 @@ from modules.views import (
     ModuleView,
     LessonView,
     modules_overview,
+    teacher_modules,
     module_detail_with_lessons,
     lesson_detail,
     teacher_stats
@@ -61,6 +62,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # Specific module endpoints must come BEFORE router.urls to avoid conflicts
     path('api/modules/overview', modules_overview, name='modules-overview'),
+    path('api/modules/teacher', teacher_modules, name='teacher-modules'),
     path('api/modules/<int:module_id>/detail', module_detail_with_lessons, name='module-detail-with-lessons'),
     path('api/modules/<int:module_id>/lessons/<int:lesson_id>', lesson_detail, name='lesson-detail'),
     path('api/teacher/stats', teacher_stats, name='teacher-stats'),
