@@ -197,7 +197,7 @@ export default function StudentExamPage() {
   // Before exam starts
   if (!hasStarted) {
     return (
-      <DetailLayout title={module.title}>
+      <DetailLayout title={module.title} backUrl={`/student/modules/${module_id}/corridor`}>
         <div className="min-h-screen flex items-center justify-center px-4">
           <div className="max-w-2xl w-full bg-white rounded-lg shadow-xl p-8">
             <div className="text-center">

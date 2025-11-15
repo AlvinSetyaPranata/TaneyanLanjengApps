@@ -98,7 +98,7 @@ export default function ModuleDetail() {
   }
 
   return (
-    <DetailLayout title={module.title}>
+    <DetailLayout title={module.title} backUrl="/student/modules">
       <div className="px-12 py-8">
         <Breadcrumps urls={urls} />
         <div className="flex justify-between items-center">

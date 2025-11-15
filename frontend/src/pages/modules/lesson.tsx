@@ -66,6 +66,14 @@ export default function LessonPage() {
   const handleNext = () => {
     if (lessonData?.navigation.next) {
       navigate(`/student/modules/${module_id}/lesson/${lessonData.navigation.next.id}`);
+    } else if (lessonData) {
+      // If there's no next lesson but there are exams, navigate to the first exam
+      const exams = lessonData.all_lessons.filter(l => l.lesson_type === 'exam');
+      if (exams.length > 0) {
+        // Find the first exam
+        const firstExam = exams[0];
+        navigate(`/student/modules/${module_id}/exam/${firstExam.id}`);
+      }
     }
   };
 
@@ -107,6 +115,19 @@ export default function LessonPage() {
 
   const { lesson, module, navigation, all_lessons } = lessonData;
   const progress = calculateProgress();
+
+  // Check if there's a next lesson or exam available
+  const hasNext = () => {
+    if (lessonData?.navigation.next) {
+      return true;
+    }
+    // Check if there are exams available
+    if (lessonData) {
+      const exams = lessonData.all_lessons.filter(l => l.lesson_type === 'exam');
+      return exams.length > 0;
+    }
+    return false;
+  };
 
   return (
     <DetailLayout title={module.title} backUrl={`/student/modules/${module_id}/corridor`}>
@@ -171,17 +192,20 @@ export default function LessonPage() {
             
             <button
               onClick={handleNext}
-              disabled={!navigation.next}
+              disabled={!hasNext()}
               className={`flex items-center gap-x-2 px-6 py-3 rounded-lg transition-colors ${
-                navigation.next
+                hasNext()
                   ? 'bg-black hover:bg-gray-800 text-white cursor-pointer'
                   : 'bg-gray-50 text-gray-400 cursor-not-allowed'
               }`}
             >
               <div className="text-right">
-                <div className="text-xs">{navigation.next ? 'Selanjutnya' : 'Selesai'}</div>
-                {navigation.next && (
-                  <div className="font-semibold text-sm">{navigation.next.title}</div>
+                <div className="text-xs">{hasNext() ? 'Selanjutnya' : 'Selesai'}</div>
+                {lessonData?.navigation.next && (
+                  <div className="font-semibold text-sm">{lessonData.navigation.next.title}</div>
+                )}
+                {!lessonData?.navigation.next && hasNext() && (
+                  <div className="font-semibold text-sm">Ujian Akhir</div>
                 )}
               </div>
               <Icon icon="tabler:arrow-right" className="text-xl" />

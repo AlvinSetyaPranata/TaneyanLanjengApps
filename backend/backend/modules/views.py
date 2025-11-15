@@ -172,7 +172,9 @@ def lesson_detail(request, module_id, lesson_id):
         lesson = Lesson.objects.select_related('module_id').get(id=lesson_id, module_id=module_id)
         
         # Get all lessons in the same module for navigation
-        all_lessons = Lesson.objects.filter(module_id=module_id, is_published=True).order_by('order')
+        # For students, include all lessons to enable navigation to exams
+        # even if they're not published yet
+        all_lessons = Lesson.objects.filter(module_id=module_id).order_by('order')
         
         # Find previous and next lessons
         lesson_list = list(all_lessons)
