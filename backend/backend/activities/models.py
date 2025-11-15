@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import User
-from modules.models import Module
+from modules.models import Module, Lesson
+
 
 class Activity(models.Model):
     student_id = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -18,7 +19,14 @@ class UserOverview(models.Model):
     date_updated = models.DateTimeField(auto_now_add=True, editable=False)
 
 
-
 class TestHistory(models.Model):
-    lesson_id = models.ForeignKey(Module, on_delete=models.CASCADE)
+    student = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='test_histories', null=True, blank=True)
+    score = models.FloatField(null=True, blank=True)
+    max_score = models.FloatField(null=True, blank=True)
+    answers = models.JSONField(default=dict)  # Store student answers
+    correct_answers = models.JSONField(default=dict)  # Store correct answers for review
     date_finished = models.DateTimeField(auto_now_add=True, editable=False)
+    
+    class Meta:
+        ordering = ['-date_finished']

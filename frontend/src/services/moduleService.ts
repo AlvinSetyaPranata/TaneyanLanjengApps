@@ -54,3 +54,24 @@ export const getLessonDetail = async (
   
   return await response.json();
 };
+
+/**
+ * Update lesson progress
+ * @param moduleId - The ID of the module
+ * @param lessonId - The ID of the lesson
+ * @returns Promise with progress update response
+ */
+export async function updateLessonProgress(moduleId: number, lessonId: number) {
+  const response = await authFetch(`${API_BASE_URL}/student/modules/${moduleId}/lessons/${lessonId}/progress`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to update lesson progress');
+  }
+  
+  return await response.json();
+}

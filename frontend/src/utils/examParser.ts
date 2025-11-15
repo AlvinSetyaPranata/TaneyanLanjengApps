@@ -17,12 +17,12 @@ export function parseExamContent(content: string): ExamQuestion[] {
     // If it's an array, it's the new format
     if (Array.isArray(jsonData)) {
       return jsonData.map((item: any, index: number) => ({
-        id: index + 1,
-        type: 'multiple-choice',
+        id: item.id || index + 1,
+        type: item.type || 'multiple-choice',
         question: item.question || '',
         options: item.options ? item.options.map((opt: any) => opt.text || '') : [],
-        points: 1, // Default points
-        // Note: We don't include correctAnswer in the student view for security
+        points: item.points || 1,
+        correctAnswer: item.options?.find((opt: any) => opt.isCorrect)?.text || ''
       }));
     }
   } catch (e) {
@@ -128,4 +128,35 @@ function parseMarkdownExamContent(content: string): ExamQuestion[] {
   }
   
   return questions;
+}
+
+// Function to compare student answers with correct answers
+export function checkAnswers(questions: ExamQuestion[], studentAnswers: {[key: number]: string}): {
+  score: number;
+  maxScore: number;
+  results: {[key: number]: {correct: boolean, correctAnswer: string | undefined}}
+} {
+  let score = 0;
+  const maxScore = questions.reduce((sum, q) => sum + q.points, 0);
+  const results: {[key: number]: {correct: boolean, correctAnswer: string | undefined}} = {};
+  
+  questions.forEach(question => {
+    const studentAnswer = studentAnswers[question.id] || '';
+    const isCorrect = studentAnswer === question.correctAnswer;
+    
+    if (isCorrect) {
+      score += question.points;
+    }
+    
+    results[question.id] = {
+      correct: isCorrect,
+      correctAnswer: question.correctAnswer
+    };
+  });
+  
+  return {
+    score,
+    maxScore,
+    results
+  };
 }

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getLessonDetail } from '../../services/moduleService';
+import { getLessonDetail, updateLessonProgress } from '../../services/moduleService';
 import type { Lesson, LessonDetailResponse } from '../../types/modules';
 
 export default function LessonPage() {
@@ -37,6 +37,13 @@ export default function LessonPage() {
         }
         
         setLessonData(data);
+        
+        // Update progress when lesson is loaded
+        try {
+          await updateLessonProgress(parseInt(module_id), parseInt(lesson_id));
+        } catch (progressError) {
+          console.error('Failed to update lesson progress:', progressError);
+        }
       } catch (err) {
         console.error('Error fetching lesson:', err);
         setError(err instanceof Error ? err.message : 'Failed to load lesson');
@@ -53,6 +60,13 @@ export default function LessonPage() {
     if (!lessonData) return 0;
     const allLessons = lessonData.all_lessons;
     const currentIndex = allLessons.findIndex(l => l.id === lessonData.lesson.id);
+    
+    // If this is the last lesson and it's not an exam, set progress to 100%
+    // Otherwise calculate normally
+    if (currentIndex === allLessons.length - 1 && lessonData.lesson.lesson_type !== 'exam') {
+      return 100;
+    }
+    
     return allLessons.length > 0 ? Math.round(((currentIndex + 1) / allLessons.length) * 100) : 0;
   };
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getLessonDetail } from '../../services/moduleService';
+import { getLessonDetail, updateLessonProgress } from '../../services/moduleService';
 import { submitExamAnswers } from '../../services/examService';
 import type { LessonDetailResponse } from '../../types/modules';
 import { parseExamContent, type ExamQuestion } from '../../utils/examParser';
@@ -59,6 +59,13 @@ export default function StudentExamPage() {
         // Parse exam content into questions
         const parsedQuestions = parseExamContent(data.lesson.content);
         setQuestions(parsedQuestions);
+        
+        // Update progress when exam is loaded
+        try {
+          await updateLessonProgress(parseInt(module_id), parseInt(lesson_id));
+        } catch (progressError) {
+          console.error('Failed to update exam progress:', progressError);
+        }
       } catch (err) {
         console.error('Error fetching lesson:', err);
         setError(err instanceof Error ? err.message : 'Failed to load exam');
@@ -147,8 +154,13 @@ export default function StudentExamPage() {
     
     try {
       // Submit answers to backend
-      await submitExamAnswers(parseInt(lesson_id!), answers);
-      console.log('Exam answers submitted successfully');
+      const result = await submitExamAnswers(parseInt(lesson_id!), answers);
+      console.log('Exam answers submitted successfully', result);
+      
+      // Store the exam results for display on the success page
+      if (result.success) {
+        console.log(`Score: ${result.score}/${result.max_score} (${result.percentage}%)`);
+      }
     } catch (error) {
       console.error('Error submitting exam answers:', error);
       // In a real implementation, you might want to show an error message to the user
@@ -261,7 +273,7 @@ export default function StudentExamPage() {
   // After submission
   if (isSubmitted) {
     return (
-      <DetailLayout title={module.title}>
+      <DetailLayout title={module.title} backUrl={`/student/modules/${module_id}/corridor`}>
         <div className="min-h-screen flex items-center justify-center px-4">
           <div className="max-w-2xl w-full bg-white rounded-lg shadow-xl p-8">
             <div className="text-center">

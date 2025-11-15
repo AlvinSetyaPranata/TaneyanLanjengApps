@@ -28,7 +28,9 @@ from activities.views import (
     UserOverviewView,
     ActivityView,
     student_stats,
-    submit_exam_answers
+    submit_exam_answers,
+    get_exam_history,
+    update_lesson_progress
 )
 from modules.views_upload import upload_image
 from users.views_admin import (
@@ -67,6 +69,8 @@ urlpatterns = [
     path('api/modules/<int:module_id>/lessons/<int:lesson_id>', lesson_detail, name='lesson-detail'),
     path('api/teacher/stats', teacher_stats, name='teacher-stats'),
     path('api/student/stats', student_stats, name='student-stats'),
+    path('api/student/exam-history', get_exam_history, name='student-exam-history'),
+    path('api/student/modules/<int:module_id>/lessons/<int:lesson_id>/progress', update_lesson_progress, name='update-lesson-progress'),
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/register/', RegisterView.as_view(), name='register'),
     # User profile endpoints

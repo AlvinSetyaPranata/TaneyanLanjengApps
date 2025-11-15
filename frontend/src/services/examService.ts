@@ -25,3 +25,17 @@ export async function submitExamAnswers(lessonId: number, answers: {[key: number
   
   return await response.json();
 }
+
+/**
+ * Get exam history for the current student
+ * @returns Promise with exam history data
+ */
+export async function getExamHistory() {
+  const response = await authFetch(`${API_BASE_URL}/student/exam-history`);
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch exam history');
+  }
+  
+  return await response.json();
+}

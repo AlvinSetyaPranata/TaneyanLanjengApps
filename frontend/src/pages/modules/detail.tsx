@@ -4,6 +4,7 @@ import Breadcrumps from "../../components/atoms/Breadcrumps";
 import { Icon } from "@iconify/react";
 import DetailLayout from "../../layouts/DetailLayout";
 import { getModuleDetail } from "../../services/moduleService";
+import { getExamHistory } from "../../services/examService";
 import type { Module, Lesson } from "../../types/modules";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -14,6 +15,7 @@ export default function ModuleDetail() {
   const [module, setModule] = useState<Module | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [examHistory, setExamHistory] = useState<any[]>([]);
 
   useEffect(() => {
     async function loadModuleDetail() {
@@ -33,6 +35,29 @@ export default function ModuleDetail() {
     }
 
     loadModuleDetail();
+  }, [module_id]);
+
+  // Load exam history
+  useEffect(() => {
+    async function loadExamHistory() {
+      try {
+        const historyData = await getExamHistory();
+        if (historyData.success) {
+          // Filter history for this module
+          const moduleHistory = historyData.history.filter(
+            (exam: any) => exam.module_id === parseInt(module_id || '0')
+          );
+          setExamHistory(moduleHistory);
+        }
+      } catch (err) {
+        console.error('Error fetching exam history:', err);
+        // Don't show error to user, just leave history empty
+      }
+    }
+
+    if (module_id) {
+      loadExamHistory();
+    }
   }, [module_id]);
 
   const urls = [
@@ -65,7 +90,7 @@ export default function ModuleDetail() {
 
   const nextLesson = getNextLesson();
   const progress = module?.progress || 0;
-  const totalLessons = module?.lessons.length || 0;
+  const totalLessons = module?.lessons?.length || 0;
   const completedLessons = Math.floor((progress / 100) * totalLessons);
 
   if (isLoading) {
@@ -159,6 +184,56 @@ export default function ModuleDetail() {
           </div>
         </div>
 
+        {/* Exam History Section */}
+        {examHistory.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+              <Icon icon="mdi:clipboard-text-clock" className="text-black" />
+              Riwayat Ujian
+            </h2>
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              {examHistory.map((exam) => (
+                <div key={exam.id} className="group flex items-center justify-between p-6 border-b last:border-b-0 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-semibold bg-gray-200 text-gray-800">
+                      <Icon icon="mdi:clipboard-text" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900">
+                        {exam.lesson_title}
+                      </h3>
+                      <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <Icon icon="mdi:calendar" width={16} />
+                          {formatDate(exam.date_finished)}
+                        </span>
+                        {exam.score !== null && exam.max_score !== null && (
+                          <span className="flex items-center gap-1">
+                            <Icon icon="mdi:star" width={16} />
+                            {exam.score} / {exam.max_score} ({exam.percentage}%)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link 
+                      to={`/student/modules/${module_id}/review-exam/${exam.id}`}
+                      className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm hover:bg-blue-200 transition-colors"
+                    >
+                      Review
+                    </Link>
+                    <Icon 
+                      icon="tabler:chevron-right" 
+                      className="text-gray-400 group-hover:text-black transition-colors text-xl"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Lessons List */}
         <div className="mt-12">
           <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
@@ -166,7 +241,7 @@ export default function ModuleDetail() {
             Daftar Materi
           </h2>
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            {module.lessons.map((lesson, index) => {
+            {module.lessons?.map((lesson, index) => {
               const isExam = lesson.lesson_type === 'exam';
               const lessonUrl = isExam 
                 ? `/student/modules/${module_id}/exam/${lesson.id}`

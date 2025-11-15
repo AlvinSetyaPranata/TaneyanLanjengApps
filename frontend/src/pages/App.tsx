@@ -5,6 +5,7 @@ import ModuleDetail from './modules/detail'
 import Lesson from './modules/lesson'
 import ExamPage from './modules/exam'
 import StudentExamPage from './modules/studentExam'
+import ReviewExam from './modules/ReviewExam'
 import Login from './Login'
 import Register from './Register'
 import Settings from './Settings'
@@ -32,6 +33,7 @@ function App() {
             <Route path="/student/modules/:module_id/corridor" element={<ProtectedRoute><ModuleDetail /></ProtectedRoute>} />
             <Route path="/student/modules/:module_id/lesson/:lesson_id" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
             <Route path="/student/modules/:module_id/exam/:lesson_id" element={<ProtectedRoute><StudentExamPage /></ProtectedRoute>} />
+            <Route path="/student/modules/:module_id/review-exam/:history_id" element={<ProtectedRoute><ReviewExam /></ProtectedRoute>} />
             
             {/* Teacher Module Management Routes */}
             <Route path="/teacher/dashboard" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
