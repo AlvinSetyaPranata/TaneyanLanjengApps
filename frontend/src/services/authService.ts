@@ -2,7 +2,7 @@
 
 import type { User } from '../utils/auth';
 
-const API_BASE_URL = 'http://localhost:8000/api'; // Updated to match the correct backend port
+const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api';
 
 export interface LoginRequest {
   username: string;

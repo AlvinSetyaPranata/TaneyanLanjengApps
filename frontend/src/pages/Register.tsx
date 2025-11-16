@@ -172,7 +172,8 @@ export default function Register() {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/roles', {
+        const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api';
+        const response = await fetch(`${API_BASE_URL}/roles`, {
           headers: {
             'Content-Type': 'application/json',
           },

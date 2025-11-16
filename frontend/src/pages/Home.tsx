@@ -55,11 +55,12 @@ export default function Home() {
   const [roles, setRoles] = useState<{[key: string]: number}>({});
   const [rolesLoaded, setRolesLoaded] = useState(false);
   
-  // Fetch roles on component mount
+  // Fetch roles from backend on component mount
   useEffect(() => {
     async function fetchRoles() {
       try {
-        const response = await fetch('http://localhost:8000/api/roles/');
+        const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api';
+        const response = await fetch(`${API_BASE_URL}/roles/`);
         if (response.ok) {
           const rolesData = await response.json();
           const roleMap: {[key: string]: number} = {};
@@ -120,8 +121,9 @@ export default function Home() {
       try {
         setIsLoading(true);
         const token = localStorage.getItem('access_token');
+        const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api';
         const endpoint = isTeacher ? 'teacher/stats' : 'student/stats';
-        const response = await fetch(`http://localhost:8000/api/${endpoint}`, {
+        const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
