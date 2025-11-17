@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import Button from './atoms/Button'
 
+// Use environment variable for API base URL
+const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api';
+
 interface ImageUploadModalProps {
   isOpen: boolean
   onClose: () => void
@@ -27,7 +30,7 @@ export default function ImageUploadModal({ isOpen, onClose, onImageSelected }: I
       formData.append('image', file)
 
       const token = localStorage.getItem('access_token')
-      const response = await fetch('http://localhost:8000/api/upload/image', {
+      const response = await fetch(`${API_BASE_URL}/upload/image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

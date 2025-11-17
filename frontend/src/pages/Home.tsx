@@ -6,6 +6,9 @@ import RootLayout from "../layouts/RootLayout";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../utils/auth";
 
+// Use environment variable for API base URL
+const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api';
+
 interface TeacherStats {
   total_modules: number
   total_lessons: number
@@ -59,7 +62,6 @@ export default function Home() {
   useEffect(() => {
     async function fetchRoles() {
       try {
-        const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api';
         const response = await fetch(`${API_BASE_URL}/roles/`);
         if (response.ok) {
           const rolesData = await response.json();
@@ -121,7 +123,6 @@ export default function Home() {
       try {
         setIsLoading(true);
         const token = localStorage.getItem('access_token');
-        const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api';
         const endpoint = isTeacher ? 'teacher/stats' : 'student/stats';
         const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
           headers: {
