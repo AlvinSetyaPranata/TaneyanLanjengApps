@@ -32,7 +32,7 @@ class ModuleView(ModelViewSet):
     def get_queryset(self):
         """Filter modules based on user role"""
         user = self.request.user
-        if hasattr(user, 'role') and user.role.id == 2:  # Teacher role
+        if hasattr(user, 'role') and user.role.name == 'Teacher':  # Teacher role
             # Teachers see only their own modules
             return Module.objects.filter(author=user)
         return super().get_queryset()
@@ -44,6 +44,10 @@ class ModuleView(ModelViewSet):
             # For list view, return modules with lesson order info
             return ModuleWithLessonsSerializer
         return ModuleSerializer
+    
+    def perform_create(self, serializer):
+        """Set the author to the current user when creating a module"""
+        serializer.save(author=self.request.user)
     
     def perform_update(self, serializer):
         """Custom update to validate exam requirement before publishing"""
@@ -88,7 +92,7 @@ class LessonView(ModelViewSet):
     def get_queryset(self):
         """Filter lessons based on user role"""
         user = self.request.user
-        if hasattr(user, 'role') and user.role.id == 2:  # Teacher role
+        if hasattr(user, 'role') and user.role.name == 'Teacher':  # Teacher role
             # Teachers see only lessons in their own modules
             return Lesson.objects.filter(module_id__author=user)
         return super().get_queryset()
@@ -124,7 +128,7 @@ def teacher_modules(request):
     This endpoint is specifically for teachers to manage their modules.
     """
     user = request.user
-    if not hasattr(user, 'role') or user.role.id != 2:  # Not a teacher
+    if not hasattr(user, 'role') or user.role.name != 'Teacher':  # Not a teacher
         return Response({
             'success': False,
             'error': 'Access denied. Teachers only.'
@@ -235,6 +239,11 @@ def teacher_stats(request):
     Shows total modules, total lessons, last module created, and monthly activity.
     """
     user = request.user
+    if not hasattr(user, 'role') or user.role.name != 'Teacher':  # Not a teacher
+        return Response({
+            'success': False,
+            'error': 'Access denied. Teachers only.'
+        }, status=status.HTTP_403_FORBIDDEN)
     
     # Get teacher's modules
     teacher_modules = Module.objects.filter(author=user)

@@ -101,7 +101,7 @@ export default function ModuleEditor() {
       
       const url = module_id 
         ? `http://localhost:8000/api/modules/${module_id}/`
-        : import.meta.env(`${API_BASE_URL}/modules/`)
+        : import.meta.env.VITE_API_BASE_URL + '/modules/'
       
       const method = module_id ? 'PUT' : 'POST'
       

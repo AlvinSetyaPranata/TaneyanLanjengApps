@@ -35,7 +35,7 @@ export default function TeacherModules() {
         const token = localStorage.getItem('access_token')
         
         // Use modules overview endpoint which includes lessons_count
-        const response = await fetch(`${API_BASE_URL}(`${API_BASE_URL}/modules/overview`), {`)
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/modules/overview`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
