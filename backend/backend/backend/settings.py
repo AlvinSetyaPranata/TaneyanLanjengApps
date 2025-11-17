@@ -252,6 +252,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:8004',
     'http://127.0.0.1:8004',
     'http://202.10.46.69:3000',
+    'https://api.taneyan-lanjheng.id'
 ]
 
 # Add production CORS origins
