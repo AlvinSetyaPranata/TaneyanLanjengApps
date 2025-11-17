@@ -84,28 +84,28 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       // Fetch admin stats
-      const statsResponse = await authFetch('http://localhost:8000/api/admin/stats')
+      const statsResponse = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/stats`)
       if (statsResponse.ok) {
         const statsData = await statsResponse.json()
         setStats(statsData.stats)
       }
 
       // Fetch users
-      const usersResponse = await authFetch('http://localhost:8000/api/admin/users')
+      const usersResponse = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/users`)
       if (usersResponse.ok) {
         const usersData = await usersResponse.json()
         setUsers(usersData.users)
       }
 
       // Fetch modules
-      const modulesResponse = await authFetch('http://localhost:8000/api/admin/modules')
+      const modulesResponse = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/modules`)
       if (modulesResponse.ok) {
         const modulesData = await modulesResponse.json()
         setModules(modulesData.modules)
       }
 
       // Fetch headlines
-      const headlinesResponse = await authFetch('http://localhost:8000/api/admin/headlines')
+      const headlinesResponse = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/headlines`)
       if (headlinesResponse.ok) {
         const headlinesData = await headlinesResponse.json()
         setHeadlines(headlinesData.headlines)
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
     e.preventDefault()
     
     try {
-      const response = await authFetch('http://localhost:8000/api/admin/users/create', {
+      const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/users/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
     if (!editingUser) return
     
     try {
-      const response = await authFetch(`http://localhost:8000/api/admin/users/${editingUser.id}/update`, {
+      const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/users/${editingUser.id}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
     if (!window.confirm('Are you sure you want to delete this user?')) return
     
     try {
-      const response = await authFetch(`http://localhost:8000/api/admin/users/${userId}/delete`, {
+      const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/users/${userId}/delete`, {
         method: 'DELETE'
       })
       
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
     e.preventDefault()
     
     try {
-      const response = await authFetch(`http://localhost:8000/api/admin/users/${passwordForm.user_id}/change-password`, {
+      const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/users/${passwordForm.user_id}/change-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -228,7 +228,7 @@ export default function AdminDashboard() {
     if (!window.confirm('Are you sure you want to delete this module? This action cannot be undone.')) return
     
     try {
-      const response = await authFetch(`http://localhost:8000/api/admin/modules/${moduleId}/delete`, {
+      const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/modules/${moduleId}/delete`, {
         method: 'DELETE'
       })
       
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
     e.preventDefault()
     
     try {
-      const response = await authFetch('http://localhost:8000/api/admin/headlines/create', {
+      const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/headlines/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -280,7 +280,7 @@ export default function AdminDashboard() {
     if (!editingHeadline) return
     
     try {
-      const response = await authFetch(`http://localhost:8000/api/admin/headlines/${editingHeadline.id}/update`, {
+      const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/headlines/${editingHeadline.id}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -309,7 +309,7 @@ export default function AdminDashboard() {
     if (!window.confirm('Are you sure you want to delete this headline?')) return
     
     try {
-      const response = await authFetch(`http://localhost:8000/api/admin/headlines/${headlineId}/delete`, {
+      const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/admin/headlines/${headlineId}/delete`, {
         method: 'DELETE'
       })
       

@@ -1,7 +1,7 @@
 ```typescript
 useEffect(() => {
   const fetchRoles = async () => {
-    const response = await fetch('http://localhost:8000/api/roles');
+    const response = await fetch(`${API_BASE_URL}(`${API_BASE_URL}/roles`));`)
     const roles = await response.json();
     
     // Filter out Admin role

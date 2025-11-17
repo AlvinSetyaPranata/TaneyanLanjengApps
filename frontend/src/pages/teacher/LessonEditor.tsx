@@ -59,7 +59,7 @@ export default function LessonEditor() {
       try {
         const token = localStorage.getItem('access_token')
         // Use the teacher-specific endpoint to get teacher's modules with lessons
-        const response = await fetch('http://localhost:8000/api/modules/teacher', {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/modules/teacher`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -153,7 +153,7 @@ export default function LessonEditor() {
       const token = localStorage.getItem('access_token')
       const url = lesson_id 
         ? `http://localhost:8000/api/lessons/${lesson_id}/`
-        : 'http://localhost:8000/api/lessons/'
+        : import.meta.env.VITE_API_BASE_URL + '/lessons/'
       
       const method = lesson_id ? 'PUT' : 'POST'
       

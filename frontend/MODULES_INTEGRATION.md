@@ -42,7 +42,7 @@ import type {
   LessonDetailResponse 
 } from '../types/modules';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env(`${API_BASE_URL}`);
 
 /**
  * Fetch all modules with their lessons
@@ -851,7 +851,7 @@ describe('Module Service', () => {
 
       const result = await getAllModules();
       
-      expect(fetch).toHaveBeenCalledWith('http://localhost:8000/api/modules/overview');
+      expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}(`${API_BASE_URL}/modules/overview`));`)
       expect(result).toEqual(mockResponse);
     });
 
@@ -1111,7 +1111,7 @@ const response = await authFetch(`${API_BASE_URL}/modules/${moduleId}/detail`);
 API base URL can be configured with environment variables:
 
 ```typescript
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || import.meta.env(`${API_BASE_URL}`);
 ```
 
 ### Build Process

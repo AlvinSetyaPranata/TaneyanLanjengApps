@@ -21,7 +21,7 @@ export default function Modules() {
   useEffect(() => {
     async function fetchRoles() {
       try {
-        const response = await fetch('http://localhost:8000/api/roles/');
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/roles/`);
         if (response.ok) {
           const rolesData = await response.json();
           const roleMap: {[key: string]: number} = {};

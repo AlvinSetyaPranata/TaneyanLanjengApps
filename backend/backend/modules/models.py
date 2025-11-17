@@ -19,6 +19,10 @@ class Module(models.Model):
     def __str__(self):
         return self.title
     
+    def get_lessons_count(self):
+        """Get the number of lessons in this module"""
+        return self.lessons.count()
+    
     def has_exam(self):
         """Check if module has at least one exam lesson"""
         return self.lessons.filter(lesson_type='exam').exists()

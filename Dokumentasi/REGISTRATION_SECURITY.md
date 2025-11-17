@@ -177,7 +177,7 @@ Roles are now fetched dynamically from the backend API:
 useEffect(() => {
   const fetchRoles = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/roles', {
+      const response = await fetch(`${API_BASE_URL}(`${API_BASE_URL}/roles`), {`)
         headers: {
           'Content-Type': 'application/json',
         },

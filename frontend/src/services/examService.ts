@@ -2,8 +2,6 @@
 
 import { authFetch } from '../utils/auth';
 
-const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api';
-
 /**
  * Submit exam answers
  * @param lessonId - The ID of the exam lesson
@@ -11,7 +9,7 @@ const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api'
  * @returns Promise with submission response
  */
 export async function submitExamAnswers(lessonId: number, answers: {[key: number]: string}) {
-  const response = await authFetch(`${API_BASE_URL}/exam/${lessonId}/submit`, {
+  const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/exam/${lessonId}/submit`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -31,7 +29,7 @@ export async function submitExamAnswers(lessonId: number, answers: {[key: number
  * @returns Promise with exam history data
  */
 export async function getExamHistory() {
-  const response = await authFetch(`${API_BASE_URL}/student/exam-history`);
+  const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/student/exam-history`);
   
   if (!response.ok) {
     throw new Error('Failed to fetch exam history');

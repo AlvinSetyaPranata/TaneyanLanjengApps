@@ -92,7 +92,7 @@ curl -X POST http://localhost:8000/api/register/ \
 
 ```javascript
 const login = async (credentials) => {
-  const response = await fetch('http://localhost:8000/api/login', {
+  const response = await fetch(`${API_BASE_URL}(`${API_BASE_URL}/login`), {`)
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ const login = async (credentials) => {
 
 ```javascript
 const register = async (userData) => {
-  const response = await fetch('http://localhost:8000/api/register', {
+  const response = await fetch(`${API_BASE_URL}(`${API_BASE_URL}/register`), {`)
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -151,7 +151,7 @@ JWT tokens have a limited lifetime. The frontend should automatically refresh to
 
 ```javascript
 const refreshAccessToken = async (refreshToken) => {
-  const response = await fetch('http://localhost:8000/api/token/refresh/', {
+  const response = await fetch(`${API_BASE_URL}(`${API_BASE_URL}/token/refresh/`), {`)
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

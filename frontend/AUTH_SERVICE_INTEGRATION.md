@@ -1,6 +1,6 @@
 **Before (Direct Fetch):**
 ```typescript
-const response = await fetch('http://localhost:8000/api/login', {
+const response = await fetch(`${API_BASE_URL}(`${API_BASE_URL}/login`), {`)
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   credentials: 'include',
@@ -32,7 +32,7 @@ try {
 
 **Before (Direct Fetch):**
 ```typescript
-const response = await fetch('http://localhost:8000/api/register', {
+const response = await fetch(`${API_BASE_URL}(`${API_BASE_URL}/register`), {`)
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   credentials: 'include',

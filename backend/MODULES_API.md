@@ -195,7 +195,7 @@ curl -X GET http://localhost:8000/api/modules/1/lessons/1 \
 ```javascript
 const fetchModules = async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/modules/overview');
+    const response = await fetch(`${API_BASE_URL}(`${API_BASE_URL}/modules/overview`));`)
     
     if (!response.ok) {
       throw new Error('Failed to fetch modules');

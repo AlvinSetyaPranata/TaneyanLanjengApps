@@ -33,7 +33,7 @@ export default function TeacherDashboard() {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem('access_token')
-        const response = await fetch('http://localhost:8000/api/teacher/stats', {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}(${import.meta.env.VITE_API_BASE_URL}/teacher/stats)`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

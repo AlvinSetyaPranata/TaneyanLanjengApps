@@ -5,13 +5,12 @@ import type {
   LessonDetailResponse 
 } from '../types/modules';
 
-const API_BASE_URL = import.meta.env.BASE_API_URL || 'http://localhost:8000/api';
 
 /**
  * Fetch all modules with their lessons
  */
 export const getAllModules = async (): Promise<ModulesOverviewResponse> => {
-  const response = await authFetch(`${API_BASE_URL}/modules/overview`);
+  const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/modules/overview`);
   
   if (!response.ok) {
     throw new Error('Failed to fetch modules overview');
@@ -24,7 +23,7 @@ export const getAllModules = async (): Promise<ModulesOverviewResponse> => {
  * Fetch a specific module with all its lessons
  */
 export const getModuleDetail = async (moduleId: number): Promise<ModuleDetailResponse> => {
-  const response = await authFetch(`${API_BASE_URL}/modules/${moduleId}/detail`);
+  const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/modules/${moduleId}/detail`);
   
   if (!response.ok) {
     if (response.status === 404) {
@@ -43,7 +42,7 @@ export const getLessonDetail = async (
   moduleId: number, 
   lessonId: number
 ): Promise<LessonDetailResponse> => {
-  const response = await authFetch(`${API_BASE_URL}/modules/${moduleId}/lessons/${lessonId}`);
+  const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/modules/${moduleId}/lessons/${lessonId}`);
   
   if (!response.ok) {
     if (response.status === 404) {
@@ -62,7 +61,7 @@ export const getLessonDetail = async (
  * @returns Promise with progress update response
  */
 export async function updateLessonProgress(moduleId: number, lessonId: number) {
-  const response = await authFetch(`${API_BASE_URL}/student/modules/${moduleId}/lessons/${lessonId}/progress`, {
+  const response = await authFetch(`${import.meta.env.VITE_API_BASE_URL}/student/modules/${moduleId}/lessons/${lessonId}/progress`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

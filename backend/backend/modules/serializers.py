@@ -32,6 +32,15 @@ class ModuleSerializer(ModelSerializer):
                   "date_created", "date_updated"]
         read_only_fields = ["id", "author_name", "lessons_count", "has_exam", "exam_count", 
                             "date_created", "date_updated"]
+    
+    def get_lessons_count(self, obj):
+        return obj.get_lessons_count()
+    
+    def get_has_exam(self, obj):
+        return obj.has_exam()
+    
+    def get_exam_count(self, obj):
+        return obj.get_exam_count()
 
 
 class ModuleWithLessonsSerializer(ModelSerializer):
@@ -62,7 +71,7 @@ class ModuleWithProgressSerializer(ModelSerializer):
                             "date_created", "date_updated"]
 
     def get_lessons_count(self, obj):
-        return obj.lessons.count()
+        return obj.get_lessons_count()
 
     def get_has_exam(self, obj):
         return obj.has_exam()
