@@ -7,6 +7,8 @@ import { fetchModulesOverview } from "../../utils/api"
 import { getUser } from "../../utils/auth"
 import type { Module } from "../../types/modules"
 
+// Use environment variable for API base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 
 export default function Modules() {
   const [activeBtn, setActiveBtn] = useState(1)
@@ -21,7 +23,7 @@ export default function Modules() {
   useEffect(() => {
     async function fetchRoles() {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/roles/`);
+        const response = await fetch(`${API_BASE_URL}/roles/`);
         if (response.ok) {
           const rolesData = await response.json();
           const roleMap: {[key: string]: number} = {};
@@ -104,7 +106,7 @@ export default function Modules() {
 
     try {
       const token = localStorage.getItem('access_token')
-      const response = await fetch(`http://localhost:8000/api/modules/${moduleId}/`, {
+      const response = await fetch(`${API_BASE_URL}/modules/${moduleId}/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

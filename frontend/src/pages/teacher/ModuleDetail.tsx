@@ -3,6 +3,9 @@ import { useState, useEffect } from "react"
 import { Link, useParams } from "react-router-dom"
 import DetailLayout from "../../layouts/DetailLayout"
 
+// Use environment variable for API base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+
 interface Lesson {
   id: number
   title: string
@@ -47,7 +50,7 @@ export default function TeacherModuleDetail() {
         setError(null)
         const token = localStorage.getItem('access_token')
         
-        const response = await fetch(`http://localhost:8000/api/modules/${module_id}/detail`, {
+        const response = await fetch(`${API_BASE_URL}/modules/${module_id}/detail`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -78,7 +81,7 @@ export default function TeacherModuleDetail() {
 
     try {
       const token = localStorage.getItem('access_token')
-      const response = await fetch(`http://localhost:8000/api/lessons/${lessonId}/`, {
+      const response = await fetch(`${API_BASE_URL}/lessons/${lessonId}/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

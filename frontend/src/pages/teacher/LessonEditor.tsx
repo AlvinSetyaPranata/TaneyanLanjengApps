@@ -12,6 +12,9 @@ import Select from '../../components/atoms/Select'
 import ImageUploadModal from '../../components/ImageUploadModal'
 import ExamQuestionEditor from '../../components/ExamQuestionEditor'
 
+// Use environment variable for API base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+
 interface LessonFormData {
   title: string
   content: string
@@ -59,7 +62,7 @@ export default function LessonEditor() {
       try {
         const token = localStorage.getItem('access_token')
         // Use the teacher-specific endpoint to get teacher's modules with lessons
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/modules/teacher`, {
+        const response = await fetch(`${API_BASE_URL}/modules/teacher`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -118,7 +121,7 @@ export default function LessonEditor() {
       const fetchLesson = async () => {
         try {
           const token = localStorage.getItem('access_token')
-          const response = await fetch(`http://localhost:8000/api/lessons/${lesson_id}/`, {
+          const response = await fetch(`${API_BASE_URL}/lessons/${lesson_id}/`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -152,8 +155,8 @@ export default function LessonEditor() {
     try {
       const token = localStorage.getItem('access_token')
       const url = lesson_id 
-        ? `http://localhost:8000/api/lessons/${lesson_id}/`
-        : import.meta.env.VITE_API_BASE_URL + '/lessons/'
+        ? `${API_BASE_URL}/lessons/${lesson_id}/`
+        : `${API_BASE_URL}/lessons/`
       
       const method = lesson_id ? 'PUT' : 'POST'
       

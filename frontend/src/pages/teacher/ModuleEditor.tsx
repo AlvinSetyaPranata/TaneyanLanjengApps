@@ -7,6 +7,9 @@ import Input from '../../components/atoms/Input'
 import { getUser } from '../../utils/auth'
 import ImageUploadModal from '../../components/ImageUploadModal'
 
+// Use environment variable for API base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+
 interface ModuleFormData {
   title: string
   description: string
@@ -47,7 +50,7 @@ export default function ModuleEditor() {
       const fetchModule = async () => {
         try {
           const token = localStorage.getItem('access_token')
-          const response = await fetch(`http://localhost:8000/api/modules/${module_id}/`, {
+          const response = await fetch(`${API_BASE_URL}/modules/${module_id}/`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -100,8 +103,8 @@ export default function ModuleEditor() {
       }
       
       const url = module_id 
-        ? `http://localhost:8000/api/modules/${module_id}/`
-        : import.meta.env.VITE_API_BASE_URL + '/modules/'
+        ? `${API_BASE_URL}/modules/${module_id}/`
+        : `${API_BASE_URL}/modules/`
       
       const method = module_id ? 'PUT' : 'POST'
       
