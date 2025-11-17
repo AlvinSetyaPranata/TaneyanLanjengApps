@@ -13,6 +13,15 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 from os import getenv
+import os
+
+# Try to import dj_database_url, but don't fail if it's not available
+try:
+    import dj_database_url
+    HAS_DJ_DATABASE_URL = True
+except ImportError:
+    dj_database_url = None
+    HAS_DJ_DATABASE_URL = False
 
 
 # Load env
@@ -27,10 +36,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-v8ypp(=6y@-87%o1_v#clrw%hp&$82u(houwzu^=#k85u#=dq='
+SECRET_KEY = getenv('SECRET_KEY', 'django-insecure-v8ypp(=6y@-87%o1_v#clrw%hp&$82u(houwzu^=#k85u#=dq=')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = getenv('DEBUG', 'True') == 'True'
+
+# Production flag
+PRODUCTION = getenv('PRODUCTION', 'False') == 'True'
 
 ALLOWED_HOSTS = [
     'd3d8e75e392c.ngrok-free.app',
@@ -39,6 +51,14 @@ ALLOWED_HOSTS = [
     'localhost:8004',
     '127.0.0.1:8004',
 ]
+
+# Add more hosts for production
+if PRODUCTION:
+    ALLOWED_HOSTS.extend([
+        # Add your production domains here
+        # 'yourdomain.com',
+        # 'www.yourdomain.com',
+    ])
 
 APPEND_SLASH = False
 
@@ -87,6 +107,14 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8004',
 ]
 
+# Add production CSRF origins
+if PRODUCTION:
+    CSRF_TRUSTED_ORIGINS.extend([
+        # Add your production origins here
+        # 'https://yourdomain.com',
+        # 'https://www.yourdomain.com',
+    ])
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -111,12 +139,33 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Use PostgreSQL in production, fallback to SQLite3 for local development
+if HAS_DJ_DATABASE_URL and getenv('DATABASE_URL'):
+    # For production environment (e.g., Heroku)
+    DATABASES = {
+        'default': dj_database_url.parse(getenv('DATABASE_URL')) if dj_database_url else {}
     }
-}
+else:
+    # Check if PostgreSQL environment variables are set
+    if getenv('DATABASE_NAME') and getenv('DATABASE_USERNAME'):
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': getenv('DATABASE_NAME'),
+                'USER': getenv('DATABASE_USERNAME'),
+                'PASSWORD': getenv('DATABASE_PASSWORD'),
+                'HOST': getenv('DATABASE_HOST', 'localhost'),
+                'PORT': getenv('DATABASE_PORT', '5432'),
+            }
+        }
+    else:
+        # Fallback to SQLite3 for local development
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 
 
 # Password validation
@@ -204,6 +253,14 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8004',
     'http://202.10.46.69:3000',
 ]
+
+# Add production CORS origins
+if PRODUCTION:
+    CORS_ALLOWED_ORIGINS.extend([
+        # Add your production CORS origins here
+        # 'https://yourdomain.com',
+        # 'https://www.yourdomain.com',
+    ])
 
 CORS_ALLOW_CREDENTIALS = True
 
