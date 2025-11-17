@@ -34,8 +34,8 @@ class User(AbstractBaseUser):
     semester = models.IntegerField()
     profile_photo = models.URLField(max_length=500, null=True, blank=True)
     role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField()
+    is_staff = models.BooleanField()
     date_registered = models.DateTimeField(auto_now_add=True, editable=False)
     date_updated = models.DateTimeField(auto_now_add=True, editable=False)
 
