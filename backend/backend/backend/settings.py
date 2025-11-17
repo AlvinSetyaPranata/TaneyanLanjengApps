@@ -50,6 +50,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost:8004',
     '127.0.0.1:8004',
+    'api.taneyan-lanjheng.id'
 ]
 
 # Add more hosts for production
