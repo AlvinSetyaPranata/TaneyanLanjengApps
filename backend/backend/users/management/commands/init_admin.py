@@ -47,10 +47,11 @@ class Command(BaseCommand):
                 full_name='Administrator',
                 institution='Taneyan Lanjeng University',
                 semester=0,
-                profile_photo='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400'
+                profile_photo='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
+                is_active=True,
+                is_staff=True
             )
             admin_user.role = admin_role
-            admin_user.is_staff = True
             admin_user.save()
             
             self.stdout.write('Created default admin user: admin')

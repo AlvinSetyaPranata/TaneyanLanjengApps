@@ -175,7 +175,7 @@ export default function Register() {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/roles`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/roles/`, {
           headers: {
             'Content-Type': 'application/json',
           },

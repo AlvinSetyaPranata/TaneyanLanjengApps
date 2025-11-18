@@ -125,7 +125,18 @@ export default function ModuleEditor() {
           navigate(`/teacher/modules/${module_id}`)
         } else {
           // For new modules, redirect to the newly created module detail page
-          navigate(`/teacher/modules/${data.id}`)
+          if (data.id) {
+            // Additional check to ensure we're not redirecting to an API endpoint
+            if (typeof data.id === 'string' && data.id.includes('api')) {
+              console.error('Invalid redirect URL detected:', data.id)
+              alert('Terjadi kesalahan saat menyimpan modul. Silakan coba lagi.')
+              return
+            }
+            navigate(`/teacher/modules/${data.id}`)
+          } else {
+            console.error('Module ID is missing in response:', data)
+            alert('Terjadi kesalahan saat menyimpan modul. Silakan coba lagi.')
+          }
         }
       } else {
         const error = await response.json()

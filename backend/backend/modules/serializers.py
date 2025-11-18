@@ -83,17 +83,29 @@ class ModuleWithProgressSerializer(ModelSerializer):
         """Get user's progress for this module"""
         request = self.context.get('request')
         if request and request.user.is_authenticated:
+            # Import here to avoid circular imports
             from activities.models import Activity
             try:
-                activity = Activity.objects.get(student_id=request.user, modules_id=obj)
+                # Use the model name directly to avoid attribute access issues
+                activity = Activity._default_manager.get(student_id=request.user, modules_id=obj)
                 return activity.progress
-            except Activity.DoesNotExist:
+            except Exception:
                 return 0
         return 0
 
 
 class ModuleCreateUpdateSerializer(ModelSerializer):
     """Serializer for creating and updating modules"""
+    
     class Meta:
         model = Module
-        fields = ["title", "description", "deadline", "cover_image", "is_published"]
+        fields = ["id", "title", "description", "deadline", "cover_image", "is_published"]
+    
+    def validate_cover_image(self, value):
+        """
+        Validate cover_image field.
+        Convert empty strings to None to pass URL validation.
+        """
+        if value == "":
+            return None
+        return value

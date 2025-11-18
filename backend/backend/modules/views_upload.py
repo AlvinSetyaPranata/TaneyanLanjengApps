@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.conf import settings
 import os
 import uuid
 
@@ -44,8 +45,8 @@ def upload_image(request):
     # Save file to media directory
     file_path = default_storage.save(f"uploads/{unique_filename}", ContentFile(image_file.read()))
     
-    # Generate URL
-    file_url = default_storage.url(file_path)
+    # Generate absolute URL
+    file_url = request.build_absolute_uri(default_storage.url(file_path))
     
     return Response({
         'success': True,

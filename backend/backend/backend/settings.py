@@ -261,8 +261,8 @@ CORS_ALLOWED_ORIGINS = [
 if PRODUCTION:
     CORS_ALLOWED_ORIGINS.extend([
         # Add your production CORS origins here
-        # 'https://yourdomain.com',
-        # 'https://www.yourdomain.com',
+        'https://taneyan-lanjheng.id',
+        'https://www.taneyan-lanjheng.id',
     ])
 
 CORS_ALLOW_CREDENTIALS = True

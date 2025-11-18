@@ -63,6 +63,13 @@ class RegisterSerializer(ModelSerializer):
         # Set default semester to 0 if not provided
         if 'semester' not in validated_data or validated_data['semester'] is None:
             validated_data['semester'] = 0
+            
+        # Set default values for required boolean fields
+        if 'is_active' not in validated_data:
+            validated_data['is_active'] = True
+        if 'is_staff' not in validated_data:
+            validated_data['is_staff'] = False
+            
         user = User(**validated_data)
         user.set_password(password)
         user.save()
@@ -76,4 +83,3 @@ class LoginSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password']
-    
