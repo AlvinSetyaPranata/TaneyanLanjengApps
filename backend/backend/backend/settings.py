@@ -107,16 +107,13 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:5175',
     'http://localhost:8004',
     'http://127.0.0.1:8004',
-     'https://taneyan-lanjheng.com',
-    'https://www.taneyan-lanjheng.com',
 ]
 
 # Add production CSRF origins
 if PRODUCTION:
     CSRF_TRUSTED_ORIGINS.extend([
-        # Add your production origins here
-        # 'https://yourdomain.com',
-        # 'https://www.yourdomain.com',
+        'https://taneyan-lanjheng.com',
+        'https://www.taneyan-lanjheng.com',
     ])
 
 ROOT_URLCONF = 'backend.urls'
