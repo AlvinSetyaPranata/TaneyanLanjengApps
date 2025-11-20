@@ -45,12 +45,11 @@ DEBUG = getenv('DEBUG', 'True') == 'True'
 PRODUCTION = getenv('PRODUCTION', 'False') == 'True'
 
 ALLOWED_HOSTS = [
-    'd3d8e75e392c.ngrok-free.app',
     'localhost',
     '127.0.0.1',
     'localhost:8004',
     '127.0.0.1:8004',
-    'api.taneyan-lanjheng.id',
+    'taneyan-lanjheng.id',
     '202.10.46.69'
 ]
 
