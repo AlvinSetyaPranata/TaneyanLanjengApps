@@ -50,7 +50,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost:8004',
     '127.0.0.1:8004',
-    'api.taneyan-lanjheng.id'
+    'api.taneyan-lanjheng.id',
+    '202.10.46.69'
 ]
 
 # Add more hosts for production
@@ -254,7 +255,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8004',
     'http://202.10.46.69:3000',
     'https://api.taneyan-lanjheng.id',
-    'https://taneyan-lanjheng.id'
+    'https://taneyan-lanjheng.id',
+    'https://taneyan-lanjheng.com',
 ]
 
 # Add production CORS origins
