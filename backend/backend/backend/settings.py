@@ -107,6 +107,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:5175',
     'http://localhost:8004',
     'http://127.0.0.1:8004',
+     'https://taneyan-lanjheng.com',
+    'https://www.taneyan-lanjheng.com',
 ]
 
 # Add production CSRF origins
@@ -257,6 +259,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://api.taneyan-lanjheng.id',
     'https://taneyan-lanjheng.id',
     'https://taneyan-lanjheng.com',
+    'https://www.taneyan-lanjheng.com',
 ]
 
 # Add production CORS origins
